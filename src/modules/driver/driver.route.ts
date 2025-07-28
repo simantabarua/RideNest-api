@@ -1,1 +1,7 @@
-// driver.route.ts - stub file 
+import { Router } from "express";
+
+const router = Router();
+
+router.get("/", () => "user");
+
+export const UserRoutes = router;

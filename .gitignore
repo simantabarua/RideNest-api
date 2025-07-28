@@ -39,6 +39,9 @@ coverage/
 
 # Postman collections
 *.postman_collection.json
+postman.json
+
 
 # Test coverage
 coverage/
+.vercel
