@@ -1,0 +1,1 @@
+// customError.ts - stub file 

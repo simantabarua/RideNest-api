@@ -1,0 +1,1 @@
+// password.ts - stub file 

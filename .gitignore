@@ -1,0 +1,44 @@
+# Node
+node_modules/
+dist/
+.env
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# TypeScript
+*.tsbuildinfo
+
+# Build output
+build/
+coverage/
+
+# Optional: for macOS/Linux users with permission errors
+*.swp
+
+# pnpm store (not needed to push)
+.pnpm-store/
+
+# Postman collections
+*.postman_collection.json
+
+# Test coverage
+coverage/

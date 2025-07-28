@@ -1,0 +1,1 @@
+// apiResponse.ts - stub file 

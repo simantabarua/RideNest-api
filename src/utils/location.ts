@@ -1,0 +1,1 @@
+// location.ts - stub file 
