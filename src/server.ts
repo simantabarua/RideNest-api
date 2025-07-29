@@ -1,27 +1,28 @@
 /* eslint-disable no-console */
 import { Server } from "http";
-import mongoose from "mongoose";
 import { envVars } from "./config/env";
 import app from "./app";
+import { dbConnect } from "./config/database";
+
 let server: Server;
 
 const startServer = async () => {
   try {
-    await mongoose.connect(envVars.DB_URL);
-    console.log("Connected to MongoDB");
+    await dbConnect();
     server = app.listen(envVars.PORT, () => {
-      console.log(`Server is running on port ${envVars.PORT}`);
+      console.log(`🚀 Server is running on port ${envVars.PORT}`);
     });
   } catch (error) {
-    console.error("Error starting server:", error);
+    console.error("❌ Error starting server:", error);
   }
 };
+
 (async () => {
   try {
     await startServer();
-    // await seedSuperAdmin();
+    // Optional: await seedSuperAdmin();
   } catch (error) {
-    console.error("Error during initialization:", error);
+    console.error("❌ Error during initialization:", error);
     process.exit(1);
   }
 })();
@@ -30,7 +31,7 @@ const gracefulShutdown = (reason: string, code = 0) => {
   console.log(`${reason} received`);
   if (server) {
     server.close(() => {
-      console.log("Server closed");
+      console.log("🔌 Server closed");
       process.exit(code);
     });
   } else {
