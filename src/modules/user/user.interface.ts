@@ -28,14 +28,15 @@ export interface IUser {
   phone?: string;
   picture?: string;
   address?: string;
+  role: Role;
+  auths: IAuthProvider[];
   isDeleted?: boolean;
   isActive?: IsActive;
   isVerified?: boolean;
   isApproved?: boolean;
   isAvailable?: boolean;
-  role: Role;
-  auths: IAuthProvider[];
-  bookings?: Types.ObjectId[];
+  isBlocked: boolean;
+  isOnline: boolean;
   earnings?: number;
   createdAt?: Date;
   updatedAt?: Date;

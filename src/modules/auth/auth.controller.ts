@@ -5,7 +5,6 @@ import AppError from "../../errorHelper/AppError";
 import { StatusCodes } from "http-status-codes";
 import { createUserToken } from "../../utils/userToken";
 import { sendResponse } from "../../utils/sendResponse";
-import { IUser } from "../user/user.interface";
 import { envVars } from "../../config/env";
 import { AuthServices } from "./auth.service";
 import { JwtPayload } from "jsonwebtoken";
@@ -16,7 +15,8 @@ const credentialLogin = catchAsync(
     passport.authenticate(
       "local",
       { session: false },
-      async (err: string, user: Partial<IUser>, info: { message: string }) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async (err: string, user: any, info: { message: string }) => {
         if (err) {
           return next(new AppError(err, StatusCodes.UNAUTHORIZED));
         }
@@ -24,7 +24,7 @@ const credentialLogin = catchAsync(
           return next(new AppError(info.message, StatusCodes.UNAUTHORIZED));
         }
         const userToken = createUserToken(user);
-        const userObj = { ...user };
+        const userObj = user.toObject();
         delete userObj.password;
         setCookies(res, userToken);
         sendResponse(res, {

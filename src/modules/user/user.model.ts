@@ -46,12 +46,6 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: false,
     },
-    bookings: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Booking",
-      },
-    ],
     earnings: {
       type: Number,
       default: 0,
@@ -82,6 +76,8 @@ const userSchema = new Schema<IUser>(
       enum: Object.values(Role),
       default: Role.RIDER,
     },
+    isBlocked: { type: Boolean, default: false },
+    isOnline: { type: Boolean, default: false },
     auths: {
       type: [AuthProviderSchema],
       required: true,
