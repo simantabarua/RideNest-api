@@ -1,24 +1,20 @@
 import { Router } from "express";
-import { Role } from "../user/user.interface";
-import { checkAuth } from "../../middlewares/checkAuth";
 import { DriverController } from "./driver.controller";
+import { checkAuth } from "../../middlewares/checkAuth";
+import { Role } from "../user/user.interface";
+import validateRequest from "../../middlewares/validatedRequest";
+import { setAvailabilitySchema } from "./driver.validation";
 
 const router = Router();
 
+router.get("/me", checkAuth(Role.DRIVER), DriverController.getProfile);
+router.get("/earnings", checkAuth(Role.DRIVER), DriverController.getEarnings);
+
 router.patch(
   "/availability",
-  checkAuth(...Object.values(Role)),
-  DriverController.updateAvailability
-);
-router.patch(
-  "/ride/:id/status",
-  checkAuth(...Object.values(Role)),
-  DriverController.updateRideStatus
-);
-router.get(
-  "/earnings",
-  checkAuth(...Object.values(Role)),
-  DriverController.getEarnings
+  checkAuth(Role.DRIVER),
+  validateRequest(setAvailabilitySchema),
+  DriverController.setAvailability
 );
 
 export const DriverRoute = router;
