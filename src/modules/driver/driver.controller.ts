@@ -12,23 +12,46 @@ export const DriverController = {
       userId,
       req.body.isOnline
     );
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Availability updated",
-      data: driver,
-    });
+    if (driver && typeof driver.toObject === "function") {
+      const driverData = driver.toObject();
+      delete driverData.password;
+      sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Availability updated",
+        data: driverData,
+      });
+    } else {
+      sendResponse(res, {
+        statusCode: 404,
+        success: false,
+        message: "Driver not found",
+        data: null,
+      });
+    }
   }),
 
   getProfile: catchAsync(async (req: Request, res: Response) => {
     const { id: userId } = req.user as JwtPayload;
+
     const driver = await DriverService.getDriverProfile(userId);
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Driver profile fetched",
-      data: driver,
-    });
+    if (driver && typeof driver.toObject === "function") {
+      const driverData = driver.toObject();
+      delete driverData.password;
+      sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Driver profile fetched",
+        data: driverData,
+      });
+    } else {
+      sendResponse(res, {
+        statusCode: 404,
+        success: false,
+        message: "Driver not found",
+        data: null,
+      });
+    }
   }),
 
   getEarnings: catchAsync(async (req: Request, res: Response) => {
