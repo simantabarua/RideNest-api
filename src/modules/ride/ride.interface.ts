@@ -12,6 +12,8 @@ export enum RideStatus {
 export interface IRideRequest {
   pickupLocation: string;
   destinationLocation: string;
+  estimatedDistance: string;
+  paymentMethod: string;
 }
 
 export interface IRide extends IRideRequest {
@@ -26,5 +28,6 @@ export interface IRide extends IRideRequest {
     completedAt?: Date;
     cancelledAt?: Date;
     rejectedAt?: Date;
+    inTransitAt?: Date;
   };
 }

@@ -13,7 +13,6 @@ const UpdateUser = async (
   payload: Partial<IUser>,
   decodedToken: JwtPayload
 ): Promise<IUser | null> => {
-  // 1. Find user first
   const user = await User.findById(userId);
   if (!user) {
     throw new AppError("User not found", StatusCodes.NOT_FOUND);

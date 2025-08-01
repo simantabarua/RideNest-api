@@ -2,28 +2,30 @@ import { Router } from "express";
 import { RideController } from "./ride.controller";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
-import { createRideSchema } from "./ride.validation";
-import validateRequest from "../../middlewares/validatedRequest";
 
 const router = Router();
 
-router.post(
-  "/request",
-  checkAuth(Role.RIDER),
-  validateRequest(createRideSchema),
-  RideController.requestRide
-);
+// Rider Routes
+router.post("/request", checkAuth(Role.RIDER), RideController.requestRide);
+router.get("/my", checkAuth(...Object.values(Role)), RideController.getMyRides);
+router.patch("/:id/cancel", checkAuth(Role.RIDER), RideController.cancelRide);
 
-router.get("/me", checkAuth(...Object.values(Role)), RideController.getMyRides);
+// Driver Status Transition Routes
+router.patch("/:id/accept", checkAuth(Role.DRIVER), RideController.acceptRide);
+router.patch("/:id/reject", checkAuth(Role.DRIVER), RideController.rejectRide);
+router.patch("/:id/pickup", checkAuth(Role.DRIVER), RideController.pickupRide);
+router.patch("/:id/start", checkAuth(Role.DRIVER), RideController.startRide);
+router.patch(
+  "/:id/complete",
+  checkAuth(Role.DRIVER),
+  RideController.completeRide
+);
 
 router.get("/", checkAuth(Role.ADMIN), RideController.getAllRides);
-
-router.patch(
+router.get(
   "/:id",
   checkAuth(...Object.values(Role)),
-  RideController.updateRideStatus
+  RideController.getRideById
 );
-
-router.get("/:id", checkAuth(Role.ADMIN), RideController.getRideById);
 
 export const RideRoute = router;
