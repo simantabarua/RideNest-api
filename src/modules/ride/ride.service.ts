@@ -6,7 +6,7 @@ const createRide = async (data: IRideRequest, riderId: string) => {
   return Ride.create({
     ...data,
     rider: riderId,
-    status: "requested",
+    status: RideStatus.REQUESTED,
     timestamps: { requestedAt: new Date() },
   });
 };
@@ -21,7 +21,6 @@ const updateRideStatus = async (
 
   switch (status) {
     case RideStatus.CANCELLED: {
-      // ✅ Only the requesting rider can cancel
       if (ride.rider.toString() !== userId) {
         throw new Error("Unauthorized: Only the rider can cancel this ride");
       }
@@ -34,7 +33,6 @@ const updateRideStatus = async (
     }
 
     case RideStatus.ACCEPTED: {
-      // ✅ Only drivers can accept, and only if no driver is assigned
       if (ride.status !== RideStatus.REQUESTED) {
         throw new Error("Ride is not available for acceptance");
       }
@@ -63,14 +61,12 @@ const updateRideStatus = async (
     case RideStatus.PICKED_UP:
     case RideStatus.IN_TRANSIT:
     case RideStatus.COMPLETED: {
-      // ✅ Only the assigned driver can update progress
       if (!ride.driver || ride.driver.toString() !== userId) {
         throw new Error(
           "Unauthorized: Only the assigned driver can update this ride"
         );
       }
 
-      // ✅ Ensure proper transition order
       const allowedTransitions: Partial<Record<RideStatus, RideStatus[]>> = {
         [RideStatus.PICKED_UP]: [RideStatus.ACCEPTED],
         [RideStatus.IN_TRANSIT]: [RideStatus.PICKED_UP],

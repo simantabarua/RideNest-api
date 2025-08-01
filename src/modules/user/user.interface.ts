@@ -1,27 +1,22 @@
-import { Types } from "mongoose";
+export enum Role {
+  ADMIN = "ADMIN",
+  DRIVER = "DRIVER",
+  RIDER = "RIDER",
+  SUPER_ADMIN = "SUPER_ADMIN",
+}
 
 export enum IsActive {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
-  BLOCKED = "BLOCKED",
 }
-
-export enum Role {
-  SUPER_ADMIN = "SUPER_ADMIN",
-  ADMIN = "ADMIN",
-  DRIVER = "DRIVER",
-  RIDER = "RIDER",
-}
-
-export type AuthProvider = "google" | "credentials";
 
 export interface IAuthProvider {
-  provider: AuthProvider;
+  provider: "google" | "credentials";
   providerId: string;
 }
 
 export interface IUser {
-  _id?: Types.ObjectId;
+  _id?: string;
   name: string;
   email: string;
   password?: string;
@@ -29,15 +24,14 @@ export interface IUser {
   picture?: string;
   address?: string;
   role: Role;
-  auths: IAuthProvider[];
   isDeleted?: boolean;
   isActive?: IsActive;
-  isVerified?: boolean;
   isApproved?: boolean;
-  isAvailable?: boolean;
-  isBlocked: boolean;
-  isOnline: boolean;
-  earnings?: number;
+  isVerified?: boolean;
+  isBlocked?: boolean;
+  auths: IAuthProvider[];
   createdAt?: Date;
   updatedAt?: Date;
+  driverInfo?: string;
+  riderInfo?: string;
 }

@@ -1,14 +1,17 @@
 import { Types } from "mongoose";
+import { IVehicleInfo } from "../vehicle/vehicle.interface";
 
-export interface IDriver {
-  user: Types.ObjectId;
-  isApproved: boolean;
-  isOnline: boolean;
-  earnings: number;
-  currentRide: Types.ObjectId | null;
-  vehicleInfo?: {
-    type: string;
-    plate: string;
-    color: string;
-  };
+export interface IDriverInfo {
+  _id?: string;
+  driver?: Types.ObjectId;
+  licenseNumber?: string;
+  vehicleInfo?: IVehicleInfo;
+  rating?: number;
+  completedRides?: number;
+  isAvailable?: boolean;
+  isVerified?: boolean;
+  isApproved?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  earnings?: number;
 }

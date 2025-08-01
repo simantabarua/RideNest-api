@@ -1,15 +1,35 @@
-import { Schema } from "mongoose";
-import { IDriver } from "./driver.interface";
+import mongoose, { Schema } from "mongoose";
+import { IDriverInfo } from "./driver.interface";
+import { IVehicleInfo, VehicleType } from "../vehicle/vehicle.interface";
 
-export const DriverSchema = new Schema<IDriver>({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-    unique: true,
+const vehicleInfoSchema = new Schema<IVehicleInfo>(
+  {
+    type: { type: String, enum: Object.values(VehicleType) },
+    model: String,
+    registrationNumber: { type: String, unique: true },
   },
-  isApproved: { type: Boolean, default: false },
-  isOnline: { type: Boolean, default: false },
-  earnings: { type: Number, default: 0 },
-  currentRide: { type: Schema.Types.ObjectId, ref: "Ride", default: null },
-});
+  { _id: false }
+);
+
+const driverInfoSchema = new Schema<IDriverInfo>(
+  {
+    driver: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+    },
+    licenseNumber: { type: String, unique: true },
+    vehicleInfo: vehicleInfoSchema,
+    rating: { type: Number, default: 0 },
+    completedRides: { type: Number, default: 0 },
+    isAvailable: { type: Boolean, default: true },
+    isVerified: { type: Boolean, default: false },
+  },
+  { timestamps: true, versionKey: false }
+);
+
+export const DriverInfo = mongoose.model<IDriverInfo>(
+  "DriverInfo",
+  driverInfoSchema
+);

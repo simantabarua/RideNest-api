@@ -7,62 +7,56 @@ import { JwtPayload } from "jsonwebtoken";
 export const DriverController = {
   setAvailability: catchAsync(async (req: Request, res: Response) => {
     const { id: userId } = req.user as JwtPayload;
-
-    const driver = await DriverService.setAvailability(
-      userId,
-      req.body.isOnline
-    );
-    if (driver && typeof driver.toObject === "function") {
-      const driverData = driver.toObject();
-      delete driverData.password;
-      sendResponse(res, {
-        statusCode: 200,
-        success: true,
-        message: "Availability updated",
-        data: driverData,
-      });
-    } else {
-      sendResponse(res, {
-        statusCode: 404,
+    const { isAvailable } = req.body;
+    if (typeof isAvailable !== "boolean") {
+      return sendResponse(res, {
+        statusCode: 400,
         success: false,
-        message: "Driver not found",
+        message: "`isAvailable` must be a boolean.",
         data: null,
       });
     }
+    const updatedDriver = await DriverService.setAvailability(
+      userId,
+      isAvailable
+    );
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Driver availability updated",
+      data: updatedDriver,
+    });
   }),
 
   getProfile: catchAsync(async (req: Request, res: Response) => {
     const { id: userId } = req.user as JwtPayload;
-
     const driver = await DriverService.getDriverProfile(userId);
-    if (driver && typeof driver.toObject === "function") {
-      const driverData = driver.toObject();
-      delete driverData.password;
-      sendResponse(res, {
-        statusCode: 200,
-        success: true,
-        message: "Driver profile fetched",
-        data: driverData,
-      });
-    } else {
-      sendResponse(res, {
+    if (!driver) {
+      return sendResponse(res, {
         statusCode: 404,
         success: false,
         message: "Driver not found",
         data: null,
       });
     }
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Driver profile fetched",
+      data: driver,
+    });
   }),
 
   getEarnings: catchAsync(async (req: Request, res: Response) => {
     const { id: userId } = req.user as JwtPayload;
-
-    const total = await DriverService.getEarnings(userId);
+    const totalEarnings = await DriverService.getEarnings(userId);
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Earnings fetched",
-      data: { totalEarnings: total },
+      message: "Driver earnings fetched",
+      data: { totalEarnings },
     });
   }),
 };

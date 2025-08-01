@@ -8,7 +8,7 @@ import { AdminRoute } from "../modules/admin/admin.route";
 export const router = Router();
 
 const moduleRoutes = [
-  { path: "/user", route: UserRoutes },
+  { path: "/users", route: UserRoutes },
   { path: "/auth", route: AuthRoutes },
   { path: "/rides", route: RideRoute },
   { path: "/drivers", route: DriverRoute },
