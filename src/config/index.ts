@@ -3,9 +3,9 @@ dotenv.config();
 
 export default {
   port: process.env.PORT || 5000,
-  dbUri: process.env.DB_URI!,
+  dbUri: process.env.DB_URI,
   jwt: {
-    secret: process.env.JWT_SECRET!,
+    secret: process.env.JWT_SECRET,
     expiresIn: process.env.JWT_EXPIRES_IN || '1d',
   },
 };

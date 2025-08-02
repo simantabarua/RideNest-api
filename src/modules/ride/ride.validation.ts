@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { RideStatus } from "./ride.interface";
 
 export const createRideSchema = z.object({
   pickupLocation: z
@@ -13,17 +12,4 @@ export const createRideSchema = z.object({
   fare: z
     .number({ message: "Fare must be a number." })
     .nonnegative({ message: "Fare must be a non-negative value." }),
-});
-
-export const updateRideSchema = z.object({
-  status: z.enum(Object.values(RideStatus) as [string], {
-    message: "Invalid ride status value.",
-  }),
-
-  driver: z.string({ message: "Driver ID must be a string." }).optional(),
-
-  fare: z
-    .number({ message: "Fare must be a number." })
-    .nonnegative({ message: "Fare must be a non-negative value." })
-    .optional(),
 });

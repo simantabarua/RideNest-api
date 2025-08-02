@@ -8,6 +8,7 @@ export enum Role {
 export enum IsActive {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
+  BLOCKED = "BLOCKED",
 }
 
 export interface IAuthProvider {

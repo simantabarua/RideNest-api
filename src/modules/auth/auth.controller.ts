@@ -8,7 +8,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import { envVars } from "../../config/env";
 import { AuthServices } from "./auth.service";
 import { JwtPayload } from "jsonwebtoken";
-import { clearCookies, setCookies } from "../../utils/manageCookie";
+import { clearAuthCookies, setAuthCookies } from "../../utils/manageCookie";
 
 const credentialLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -26,7 +26,7 @@ const credentialLogin = catchAsync(
         const userToken = createUserToken(user);
         const userObj = user.toObject();
         delete userObj.password;
-        setCookies(res, userToken);
+        setAuthCookies(res, userToken);
         sendResponse(res, {
           statusCode: StatusCodes.OK,
           success: true,
@@ -45,18 +45,23 @@ const credentialLogin = catchAsync(
 const generateNewAccessToken = catchAsync(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async (req: Request, res: Response, next: NextFunction) => {
-    const refreshToken = req.cookies.refreshToken;
-    const tokenInfo = await AuthServices.getNewAccessToken(
-      refreshToken as string
-    );
+    const refreshToken = req.cookies?.refreshToken;
 
-    setCookies(res, tokenInfo);
+    if (!refreshToken || typeof refreshToken !== "string") {
+      throw new AppError("No refresh token provided", StatusCodes.UNAUTHORIZED);
+    }
+
+    const tokenInfo = await AuthServices.getNewAccessToken(refreshToken);
+
+    setAuthCookies(res, tokenInfo);
 
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
       message: "New access token generated successfully",
-      data: refreshToken,
+      data: {
+        accessToken: tokenInfo.accessToken,
+      },
     });
   }
 );
@@ -64,7 +69,7 @@ const generateNewAccessToken = catchAsync(
 const logout = catchAsync(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async (req: Request, res: Response, next: NextFunction) => {
-    clearCookies(res);
+    clearAuthCookies(res);
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
@@ -105,7 +110,7 @@ const googleAuthController = catchAsync(
       return;
     }
     const tokenInfo = createUserToken(user);
-    setCookies(res, tokenInfo);
+    setAuthCookies(res, tokenInfo);
     res.redirect(`${envVars.FRONTEND_URL}/${redirectTo}`);
   }
 );

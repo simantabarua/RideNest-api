@@ -15,12 +15,17 @@ export interface IRideRequest {
   estimatedDistance: string;
   paymentMethod: string;
 }
+export interface IPayment {
+  paymentStatus: "pending" | "complete" | "failed";
+  paymentMethod: "cash" | "card";
+}
 
 export interface IRide extends IRideRequest {
   rider: Types.ObjectId;
   driver?: Types.ObjectId;
   status: RideStatus;
   fare?: number;
+  payment?: Types.ObjectId;
   timestamps: {
     requestedAt: Date;
     acceptedAt?: Date;

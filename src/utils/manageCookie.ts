@@ -1,28 +1,41 @@
 import { Response } from "express";
+import { envVars } from "../config/env";
+
 export interface TokenInfo {
   accessToken?: string;
   refreshToken?: string;
 }
-export const setCookies = (res: Response, tokenInfo: TokenInfo) => {
-  res.cookie("refreshToken", tokenInfo.refreshToken, {
-    httpOnly: false,
-    secure: false,
-  });
-  res.cookie("accessToken", tokenInfo.accessToken, {
-    httpOnly: false,
-    secure: false,
-  });
+
+const isProduction = envVars.NODE_ENV === "production";
+
+export const setAuthCookies = (res: Response, tokens: TokenInfo): void => {
+  if (tokens.accessToken) {
+    res.cookie("accessToken", tokens.accessToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: "none",
+    });
+  }
+
+  if (tokens.refreshToken) {
+    res.cookie("refreshToken", tokens.refreshToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: "none",
+    });
+  }
 };
 
-export const clearCookies = (res: Response) => {
-  res.clearCookie("refreshToken", {
-    httpOnly: false,
-    secure: false,
+export const clearAuthCookies = (res: Response): void => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: isProduction,
     sameSite: "lax",
   });
-  res.clearCookie("accessToken", {
-    httpOnly: false,
-    secure: false,
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: isProduction,
     sameSite: "lax",
   });
 };

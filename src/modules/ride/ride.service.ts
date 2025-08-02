@@ -5,12 +5,16 @@ import User from "../user/user.model";
 import { DriverInfo } from "../driver/driver.model";
 import { StatusCodes } from "http-status-codes";
 import AppError from "../../errorHelper/AppError";
+import { Payment } from "../payment/payment.model";
+import { PaymentMethod, PaymentStatus } from "../payment/payment.interface";
 
-// Utility
 const ensureUserIsActive = async (userId: string) => {
   const user = await User.findById(userId);
   if (!user || user.isBlocked) {
-    throw new AppError("Access denied. Your account is suspended.", StatusCodes.FORBIDDEN);
+    throw new AppError(
+      "Access denied. Your account is suspended.",
+      StatusCodes.FORBIDDEN
+    );
   }
 };
 
@@ -68,10 +72,16 @@ const cancelRide = async (rideId: string, userId: string) => {
   if (!ride) throw new AppError("Ride not found", StatusCodes.NOT_FOUND);
 
   if (ride.rider.toString() !== userId)
-    throw new AppError("Only the rider can cancel this ride", StatusCodes.FORBIDDEN);
+    throw new AppError(
+      "Only the rider can cancel this ride",
+      StatusCodes.FORBIDDEN
+    );
 
   if (ride.status !== RideStatus.REQUESTED)
-    throw new AppError("Cannot cancel ride after it is accepted", StatusCodes.BAD_REQUEST);
+    throw new AppError(
+      "Cannot cancel ride after it is accepted",
+      StatusCodes.BAD_REQUEST
+    );
 
   ride.status = RideStatus.CANCELLED;
   ride.timestamps.cancelledAt = new Date();
@@ -88,7 +98,10 @@ const acceptRide = async (rideId: string, driverId: string) => {
   if (!ride) throw new AppError("Ride not found", StatusCodes.NOT_FOUND);
 
   if (ride.status !== RideStatus.REQUESTED)
-    throw new AppError("Ride is not available for acceptance", StatusCodes.BAD_REQUEST);
+    throw new AppError(
+      "Ride is not available for acceptance",
+      StatusCodes.BAD_REQUEST
+    );
 
   if (ride.driver)
     throw new AppError("Ride already accepted", StatusCodes.BAD_REQUEST);
@@ -116,7 +129,10 @@ const rejectRide = async (rideId: string, driverId: string) => {
   if (!ride) throw new AppError("Ride not found", StatusCodes.NOT_FOUND);
 
   if (ride.status !== RideStatus.REQUESTED)
-    throw new AppError("Ride is not available for rejection", StatusCodes.BAD_REQUEST);
+    throw new AppError(
+      "Ride is not available for rejection",
+      StatusCodes.BAD_REQUEST
+    );
 
   if (ride.driver)
     throw new AppError("Ride already handled", StatusCodes.BAD_REQUEST);
@@ -139,13 +155,30 @@ const startRide = async (rideId: string, driverId: string) => {
   return progressRideStatus(rideId, driverId, RideStatus.IN_TRANSIT);
 };
 
-//  Complete Ride
+// complete ride
 const completeRide = async (rideId: string, driverId: string) => {
   const updatedRide = await progressRideStatus(
     rideId,
     driverId,
     RideStatus.COMPLETED
   );
+
+  if (!updatedRide) {
+    throw new AppError("Ride not found after update", StatusCodes.NOT_FOUND);
+  }
+
+  const payment = await Payment.create({
+    ride: updatedRide._id,
+    paymentStatus: PaymentStatus.PENDING,
+    paymentMethod: PaymentMethod.CASH,
+    amount: updatedRide.fare || 0,
+    currency: "BDT",
+    initiatedAt: new Date(),
+  });
+
+  updatedRide.payment = payment._id as Types.ObjectId;
+
+  await updatedRide.save();
 
   await DriverInfo.findOneAndUpdate(
     { driver: driverId },
@@ -155,10 +188,13 @@ const completeRide = async (rideId: string, driverId: string) => {
     }
   );
 
-  return updatedRide;
+  return Ride.findById(updatedRide._id)
+    .populate("rider", "name email")
+    .populate("driver", "name email")
+    .populate("payment")
+    .exec();
 };
 
-//  Progress ride helper
 const progressRideStatus = async (
   rideId: string,
   driverId: string,
@@ -170,7 +206,10 @@ const progressRideStatus = async (
   if (!ride) throw new AppError("Ride not found", StatusCodes.NOT_FOUND);
 
   if (!ride.driver || ride.driver.toString() !== driverId)
-    throw new AppError("Only assigned driver can update this ride", StatusCodes.FORBIDDEN);
+    throw new AppError(
+      "Only assigned driver can update this ride",
+      StatusCodes.FORBIDDEN
+    );
 
   const validTransitions: Record<RideStatus, RideStatus[]> = {
     [RideStatus.PICKED_UP]: [RideStatus.ACCEPTED],
@@ -184,7 +223,10 @@ const progressRideStatus = async (
 
   const allowedPrev = validTransitions[newStatus];
   if (!allowedPrev.includes(ride.status)) {
-    throw new AppError(`Cannot move from ${ride.status} to ${newStatus}`, StatusCodes.BAD_REQUEST);
+    throw new AppError(
+      `Cannot move from ${ride.status} to ${newStatus}`,
+      StatusCodes.BAD_REQUEST
+    );
   }
 
   ride.status = newStatus;

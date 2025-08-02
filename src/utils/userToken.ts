@@ -47,11 +47,7 @@ export const createNewAccessToken = async (refreshToken: string) => {
   }
 
   const newAccessToken = generateToken(
-    {
-      id: user._id,
-      email: user.email,
-      role: user.role,
-    },
+    {id: user._id,  email: user.email,role: user.role,},
     envVars.JWT_ACCESS_SECRET,
     envVars.JWT_ACCESS_EXPIRES
   );
