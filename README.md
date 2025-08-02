@@ -22,8 +22,8 @@ A modular RESTful API for managing ride requests, built with Express.js, TypeScr
 Clone the repository:
 
 ```bash
-git clone https://github.com/simantabarua/library-management-api-node.git
-cd library-management-api-node
+git clone https://github.com/simantabarua/RideNest-api.git
+cd RideNest-api
 npm install
 ```
 
@@ -164,8 +164,6 @@ src/
 ├── utils/
 └── errorHelper/
 ```
-
-
 
 ## 👨‍💻 Author
 
