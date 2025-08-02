@@ -3,6 +3,7 @@ import { AuthController } from "./auth.controller";
 import { Role } from "../user/user.interface";
 import passport from "passport";
 import { checkAuth } from "../../middlewares/checkAuth";
+import { envVars } from "../../config/env";
 const router = Router();
 router.post("/login", AuthController.credentialLogin);
 router.post("/refresh-token", AuthController.generateNewAccessToken);
@@ -23,7 +24,7 @@ router.get("/google", (req: Request, res: Response, next: NextFunction) => {
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "/login",
+    failureRedirect: `${envVars.FRONTEND_URL}/login`,
     session: false,
   }),
   AuthController.googleAuthController

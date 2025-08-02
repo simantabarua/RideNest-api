@@ -37,9 +37,8 @@ coverage/
 # pnpm store (not needed to push)
 .pnpm-store/
 
-# Postman collections
-*.postman_collection.json
-postman.json
+
+
 
 
 # Test coverage

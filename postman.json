@@ -1,0 +1,819 @@
+{
+  "info": {
+    "_postman_id": "12e8bf11-11d5-4760-b6a4-ba08844262f7",
+    "name": "Ride Booking API - Full Testing Copy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38049072",
+    "_collection_link": "https://warped-flare-115681.postman.co/workspace/Natours-api~70462253-75d9-4021-b5c1-823581253724/collection/38049072-12e8bf11-11d5-4760-b6a4-ba08844262f7?action=share&source=collection_link&creator=38049072"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register Rider",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Rider  Jane\",\n    \"email\": \"rider4.jane@example.com\",\n    \"password\": \"Rider@123\",\n    \"phone\": \"+8801712345678\"\n   \n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/users/register",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Driver",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Driver John\",\n    \"email\": \"driver2.john@example.com\",\n    \"password\": \"Driver@123\",\n    \"phone\": \"+8801812345678\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/users/register",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Admin Alice\",\n    \"email\": \"admin.alice@example.com\",\n    \"password\": \"Admin@123\",\n    \"phone\": \"+8801912345678\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/users/register",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Rider)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"rider_token\", jsonData.data.accessToken);",
+                  "pm.environment.set(\"rider_refresh_token\", jsonData.data.refreshToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"rider4.jane@example.com\",\n    \"password\": \"Rider@123\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/auth/login",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Driver)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"driver_token\", jsonData.data.accessToken);",
+                  "pm.environment.set(\"driver_refresh_token\", jsonData.data.refreshToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"driver2.john@example.com\",\n    \"password\": \"Driver@123\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/auth/login",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"admin_token\", jsonData.data.accessToken);",
+                  "pm.environment.set(\"admin_refresh_token\", jsonData.data.refreshToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"admin.alice@example.com\",\n    \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/auth/login",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Super Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"super_admin_token\", jsonData.data.accessToken);",
+                  "pm.environment.set(\"super_admin_refresh_token\", jsonData.data.refreshToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"super@mail.com\",\n    \"password\": \"Super@123\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/auth/login",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/auth/refresh-token",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "refresh-token"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{rider_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/auth/logout",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "logout"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{rider_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"oldPassword\": \"Rider@123\",\n    \"newPassword\": \"NewRider@123\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/auth/change-password",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "change-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Google Auth Redirect (Placeholder)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/auth/google?redirect=/dashboard",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "google"],
+              "query": [
+                {
+                  "key": "redirect",
+                  "value": "/dashboard"
+                }
+              ]
+            },
+            "description": "This is a redirect endpoint. You would typically access this from a browser."
+          },
+          "response": []
+        },
+        {
+          "name": "Google Auth Callback (Placeholder)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/auth/google/callback",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "google", "callback"]
+            },
+            "description": "This endpoint is typically handled by Google's OAuth flow after successful authentication."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Get All Users (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/admin/users",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users Query",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/admin/users?searchTerm=john&sort=-createdAt&page=1&limit=5",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users"],
+              "query": [
+                {
+                  "key": "searchTerm",
+                  "value": "john"
+                },
+                {
+                  "key": "sort",
+                  "value": "-createdAt"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Profile (self)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{rider_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \n \"name\" : \"jone new\"\n\n}\n"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/users/update",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "update"]
+            },
+            "description": "User can update their own profile. Admin can update any user's profile."
+          },
+          "response": []
+        },
+        {
+          "name": "Update user profile (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"licenseNumber\": \"DL-19378930\",\r\n  \"vehicleInfo\": {\r\n    \"type\": \"car\",\r\n    \"model\": \"Toyota Prius\",\r\n    \"registrationNumber\": \"AZW-a98764\"\r\n  },\r\n  \"role\": \"DRIVER\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/admin/users/{{driver_id}}",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users", "{{driver_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get user profile (self)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{rider_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/users/me",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/admin/users/{{rider_id}}",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users", "{{rider_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Driver Management",
+      "item": [
+        {
+          "name": "Get Driver Earnings (Driver)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{driver_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/drivers/earnings",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "drivers", "earnings"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set Driver Availability (Driver)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{driver_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"isAvailable\": true\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/drivers/availability",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "drivers", "availability"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ride Management",
+      "item": [
+        {
+          "name": "Request a Ride (Rider)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{rider_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"pickupLocation\": \"123 Main St, Los Angeles\",\n    \"destinationLocation\":  \"456 Oak Ave, Santa Monica\",\n    \"fare\": 25.50\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/rides/request",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rides", "request"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Rides (Rider/Driver/Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{rider_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/rides/my",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rides", "my"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Rides (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/rides",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rides"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ride By ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/rides/{{ride_id}}",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rides", "{{ride_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ride Status (Driver - Accept)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{driver_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"ACCEPTED\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/rides/{{ride_id}}/accept",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rides", "{{ride_id}}", "accept"]
+            },
+            "description": "Driver accepts a ride request."
+          },
+          "response": []
+        },
+        {
+          "name": "Ride Status (Driver - Picked Up)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{driver_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"PICKED_UP\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/rides/{{ride_id}}/pickup",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rides", "{{ride_id}}", "pickup"]
+            },
+            "description": "Driver updates ride to picked up."
+          },
+          "response": []
+        },
+        {
+          "name": "Ride Status (Driver - In Transit)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{driver_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"IN_TRANSIT\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/rides/{{ride_id}}/start",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rides", "{{ride_id}}", "start"]
+            },
+            "description": "Driver updates ride to in transit."
+          },
+          "response": []
+        },
+        {
+          "name": "Ride Status (Driver - Completed)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{driver_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"COMPLETED\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/rides/{{ride_id}}/complete",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rides", "{{ride_id}}", "complete"]
+            },
+            "description": "Driver completes the ride."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Ride (Rider)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{rider_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"CANCELED\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/rides/{{ride_id}}/cancel",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "rides", "{{ride_id}}", "cancel"]
+            },
+            "description": "Rider cancels a ride. This route is implied by the requirements. You need to implement it, handling allowed cancellation windows."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get Dashboard Stats (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://{{base_url}}/api/v1/admin/dashboard",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "dashboard"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "ride_id",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

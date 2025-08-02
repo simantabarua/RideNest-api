@@ -1,4 +1,4 @@
-# 🚗 Ride Booking API
+# 🚗 Ridenest: Ride Booking API
 
 A modular RESTful API for managing ride requests, built with Express.js, TypeScript, Mongoose, Zod, and Passport.js.
 
@@ -22,20 +22,38 @@ A modular RESTful API for managing ride requests, built with Express.js, TypeScr
 Clone the repository:
 
 ```bash
-git clone https://github.com/simantabarua/ride-booking-api.git
-cd ride-booking-api
+git clone https://github.com/simantabarua/library-management-api-node.git
+cd library-management-api-node
 npm install
 ```
 
 Create a `.env` file in the root directory with the following variables:
 
-```
+```env
+
 PORT=5000
-DATABASE_URL=mongodb://localhost:27017/ride-booking
-JWT_SECRET=your_jwt_secret
-JWT_EXPIRES_IN=1d
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
+
+DB_URL=db_url
+
+JWT_ACCESS_SECRET=access_secret
+JWT_ACCESS_EXPIRES=1d
+JWT_REFRESH_SECRET=refresh_secret
+JWT_REFRESH_EXPIRES=7d
+
+BCRYPT_SALT_ROUND=10
+
+SUPER_ADMIN_EMAIL=super@mail.com
+SUPER_ADMIN_PASSWORD=Super@123
+
+
+GOOGLE_CLIENT_ID=google_client_id
+GOOGLE_CLIENT_SECRET=google_secret
+GOOGLE_CALLBACK_URL=http://localhost:5000/
+
+EXPRESS_SESSION_SECRET=express-session
+
 ```
 
 Start the development server:
@@ -48,53 +66,62 @@ npm run dev
 
 ## 📘 API Endpoints
 
-### Auth
+### 🔐 Authentication
 
-| Method | Endpoint                     | Description                       |
-| ------ | ---------------------------- | --------------------------------- |
-| POST   | `/api/v1/auth/register`      | Register a new user               |
-| POST   | `/api/v1/auth/login`         | Login with email and password     |
-| POST   | `/api/v1/auth/google`        | Login/Register using Google OAuth |
-| POST   | `/api/v1/auth/refresh-token` | Refresh JWT tokens                |
-| POST   | `/api/v1/auth/logout`        | Clear cookies and logout          |
-
-### Users
-
-| Method | Endpoint               | Description              |
-| ------ | ---------------------- | ------------------------ |
-| GET    | `/api/v1/users/me`     | Get current user profile |
-| PATCH  | `/api/v1/users/update` | Update user profile      |
-
-### Drivers
-
-| Method | Endpoint                          | Description                     |
-| ------ | --------------------------------- | ------------------------------- |
-| PATCH  | `/api/v1/driver/info`             | Upsert driver details           |
-| PATCH  | `/api/v1/driver/set-availability` | Set online/offline availability |
-| GET    | `/api/v1/driver/profile`          | Get driver profile              |
-
-### Rides
-
-| Method | Endpoint                     | Description                        |
-| ------ | ---------------------------- | ---------------------------------- |
-| POST   | `/api/v1/rides/request`      | Request a new ride (rider)         |
-| PATCH  | `/api/v1/rides/accept/:id`   | Accept a ride (driver)             |
-| PATCH  | `/api/v1/rides/pickup/:id`   | Mark as picked up (driver)         |
-| PATCH  | `/api/v1/rides/start/:id`    | Start the trip (driver)            |
-| PATCH  | `/api/v1/rides/complete/:id` | Complete the ride (driver)         |
-| PATCH  | `/api/v1/rides/cancel/:id`   | Cancel the ride (rider or admin)   |
-| GET    | `/api/v1/rides/my`           | Get all rides for the current user |
-| GET    | `/api/v1/rides/:id`          | Get ride details by ID             |
+| Method | Endpoint                     | Description                                |
+| ------ | ---------------------------- | ------------------------------------------ |
+| POST   | /api/v1/users/register       | Register a new user (Rider, Driver, Admin) |
+| POST   | /api/v1/auth/login           | Login with email and password              |
+| POST   | /api/v1/auth/refresh-token   | Refresh JWT tokens                         |
+| POST   | /api/v1/auth/logout          | Clear cookies and logout                   |
+| PATCH  | /api/v1/auth/change-password | Change a user's password                   |
+| GET    | /api/v1/auth/google          | Initiate Google OAuth                      |
+| GET    | /api/v1/auth/google/callback | Google OAuth callback endpoint             |
 
 ---
 
-## 🛡️ Role-Based Access Control
+### 👤 User Management
 
-| Role   | Permissions                            |
-| ------ | -------------------------------------- |
-| Rider  | Request rides, view own rides          |
-| Driver | Accept and manage rides, update status |
-| Admin  | View and manage all rides & users      |
+| Method | Endpoint                | Description                          |
+| ------ | ----------------------- | ------------------------------------ |
+| GET    | /api/v1/users/me        | Get current user's profile           |
+| PATCH  | /api/v1/users/update    | Update current user's profile        |
+| GET    | /api/v1/admin/users     | Get all users (Admin only)           |
+| PATCH  | /api/v1/admin/users/:id | Update a user's profile (Admin only) |
+| DELETE | /api/v1/admin/users/:id | Delete a user (Admin only)           |
+
+---
+
+### 🚕 Driver Management
+
+| Method | Endpoint                     | Description                          |
+| ------ | ---------------------------- | ------------------------------------ |
+| GET    | /api/v1/drivers/earnings     | Get a driver's earnings              |
+| PATCH  | /api/v1/drivers/availability | Set a driver's online/offline status |
+
+---
+
+### 🛺 Ride Management
+
+| Method | Endpoint                   | Description                         |
+| ------ | -------------------------- | ----------------------------------- |
+| POST   | /api/v1/rides/request      | Request a new ride (Rider only)     |
+| GET    | /api/v1/rides/my           | Get all rides for current user      |
+| GET    | /api/v1/rides              | Get all rides (Admin only)          |
+| GET    | /api/v1/rides/:id          | Get ride details by ID (Admin only) |
+| PATCH  | /api/v1/rides/:id/accept   | Driver accepts a ride request       |
+| PATCH  | /api/v1/rides/:id/pickup   | Driver marks a ride as "picked up"  |
+| PATCH  | /api/v1/rides/:id/start    | Driver marks a ride as "in transit" |
+| PATCH  | /api/v1/rides/:id/complete | Driver completes a ride             |
+| PATCH  | /api/v1/rides/:id/cancel   | Rider or Admin cancels a ride       |
+
+---
+
+### 🛠️ Admin
+
+| Method | Endpoint                | Description                            |
+| ------ | ----------------------- | -------------------------------------- |
+| GET    | /api/v1/admin/dashboard | Get admin dashboard stats (Admin only) |
 
 ---
 
@@ -138,24 +165,12 @@ src/
 └── errorHelper/
 ```
 
----
 
-## ✅ Status
-
-- [x] Auth (Email/Google + JWT)
-- [x] Rider/Driver info with validation
-- [x] Role-based ride lifecycle
-- [ ] Payment integration (WIP)
-- [ ] Admin dashboard features
-
----
 
 ## 👨‍💻 Author
 
 **Simanta Barua**  
-🌐 [Portfolio](https://simanta.web.app/)  
 📧 simanta.barua@yahoo.com  
-🔗 [LinkedIn](https://linkedin.com/in/simantabarua)  
+🌐 [Portfolio](https://simanta.web.app/)  
+🔗 [LinkedIn](https://www.linkedin.com/in/simantabarua/)  
 💻 [GitHub](https://github.com/simantabarua)
-
----
