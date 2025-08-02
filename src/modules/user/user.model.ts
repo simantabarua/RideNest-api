@@ -32,7 +32,7 @@ const userSchema = new Schema<IUser>(
     },
     isApproved: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
-    isBlocked: { type: Boolean, default: false },
+    isSuspend: { type: Boolean, default: false },
     auths: { type: [AuthProviderSchema], default: [] },
 
     driverInfo: { type: Schema.Types.ObjectId, ref: "DriverInfo" },

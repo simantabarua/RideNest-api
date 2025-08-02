@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { Role } from "../user/user.interface";
 
 export enum RideStatus {
   REQUESTED = "requested",
@@ -34,5 +35,9 @@ export interface IRide extends IRideRequest {
     cancelledAt?: Date;
     rejectedAt?: Date;
     inTransitAt?: Date;
+  };
+  cancellation?: {
+    reason: string;
+    cancelledBy: Role;
   };
 }

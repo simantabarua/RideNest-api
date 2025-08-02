@@ -29,7 +29,7 @@ export interface IUser {
   isActive?: IsActive;
   isApproved?: boolean;
   isVerified?: boolean;
-  isBlocked?: boolean;
+  isSuspend?: boolean;
   auths: IAuthProvider[];
   createdAt?: Date;
   updatedAt?: Date;

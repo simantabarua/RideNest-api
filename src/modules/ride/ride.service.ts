@@ -7,10 +7,12 @@ import { StatusCodes } from "http-status-codes";
 import AppError from "../../errorHelper/AppError";
 import { Payment } from "../payment/payment.model";
 import { PaymentMethod, PaymentStatus } from "../payment/payment.interface";
+import { Role } from "../user/user.interface";
+import RiderInfo from "../rider/rider.info.model";
 
 const ensureUserIsActive = async (userId: string) => {
   const user = await User.findById(userId);
-  if (!user || user.isBlocked) {
+  if (!user || user.isSuspend) {
     throw new AppError(
       "Access denied. Your account is suspended.",
       StatusCodes.FORBIDDEN
@@ -35,6 +37,20 @@ const ensureDriverHasNoActiveRide = async (driverId: string) => {
 
 // Create Ride
 const createRide = async (data: IRideRequest, riderId: string) => {
+  const activeRide = await Ride.findOne({
+    rider: riderId,
+    status: {
+      $nin: [RideStatus.COMPLETED, RideStatus.CANCELLED, RideStatus.REJECTED],
+    },
+  });
+
+  if (activeRide) {
+    throw new AppError(
+      "You have an ongoing ride. Please complete or cancel it before requesting a new one.",
+      StatusCodes.BAD_REQUEST
+    );
+  }
+
   return Ride.create({
     ...data,
     rider: riderId,
@@ -65,27 +81,58 @@ const getRideById = async (rideId: string) => {
 };
 
 // Cancel Ride
-const cancelRide = async (rideId: string, userId: string) => {
+const cancelRide = async (
+  rideId: string,
+  userId: string,
+  options: { reason: string; cancelBy: Role }
+) => {
   await ensureUserIsActive(userId);
 
   const ride = await Ride.findById(rideId);
   if (!ride) throw new AppError("Ride not found", StatusCodes.NOT_FOUND);
 
-  if (ride.rider.toString() !== userId)
-    throw new AppError(
-      "Only the rider can cancel this ride",
-      StatusCodes.FORBIDDEN
-    );
+  if (ride.status === RideStatus.CANCELLED) {
+    throw new AppError("Ride is already cancelled", StatusCodes.BAD_REQUEST);
+  }
 
-  if (ride.status !== RideStatus.REQUESTED)
-    throw new AppError(
-      "Cannot cancel ride after it is accepted",
-      StatusCodes.BAD_REQUEST
-    );
+  if (options.cancelBy === Role.RIDER) {
+    if (ride.rider.toString() !== userId) {
+      throw new AppError(
+        "Only the rider can cancel this ride",
+        StatusCodes.FORBIDDEN
+      );
+    }
+  } else if (options.cancelBy === Role.DRIVER) {
+    if (ride.driver?.toString() !== userId) {
+      throw new AppError(
+        "Only the assigned driver can cancel this ride",
+        StatusCodes.FORBIDDEN
+      );
+    }
+  }
 
   ride.status = RideStatus.CANCELLED;
-  ride.timestamps.cancelledAt = new Date();
+  ride.cancellation = {
+    reason: options.reason,
+    cancelledBy: options.cancelBy,
+  };
+  ride.timestamps = {
+    ...ride.timestamps,
+    cancelledAt: new Date(),
+  };
+
   await ride.save();
+
+  await RiderInfo.findOneAndUpdate(
+    { rider: ride.rider },
+    {
+      $inc: {
+        cancelledRides: 1,
+        totalRides: 1,
+      },
+    },
+    { upsert: true, new: true }
+  );
 
   return getRideById(ride._id.toString());
 };

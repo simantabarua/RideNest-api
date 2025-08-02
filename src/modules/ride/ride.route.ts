@@ -3,7 +3,7 @@ import { RideController } from "./ride.controller";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
 import validateRequest from "../../middlewares/validatedRequest";
-import { createRideSchema } from "./ride.validation";
+import { cancelRideSchema, createRideSchema } from "./ride.validation";
 
 const router = Router();
 
@@ -20,7 +20,7 @@ router.get("/my", checkAuth(...Object.values(Role)), RideController.getMyRides);
 router.patch(
   "/:id/cancel",
   checkAuth(Role.RIDER),
-
+  validateRequest(cancelRideSchema),
   RideController.cancelRide
 );
 

@@ -1,5 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
 import { IRide, RideStatus } from "./ride.interface";
+import { Role } from "../user/user.interface";
 
 const rideSchema = new mongoose.Schema(
   {
@@ -40,6 +41,14 @@ const rideSchema = new mongoose.Schema(
       completedAt: Date,
       cancelledAt: Date,
       inTransitAt: Date,
+    },
+    cancellation: {
+      reason: { type: String },
+      cancelledBy: {
+        type: String,
+        enum: Object.values(Role),
+      },
+      cancelledAt: Date,
     },
   },
   {

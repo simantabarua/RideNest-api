@@ -13,3 +13,7 @@ export const createRideSchema = z.object({
     .number({ message: "Fare must be a number." })
     .nonnegative({ message: "Fare must be a non-negative value." }),
 });
+
+export const cancelRideSchema = z.object({
+  reason: z.string().min(1, "Reason is required"),
+});

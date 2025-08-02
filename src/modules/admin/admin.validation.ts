@@ -24,7 +24,7 @@ export const updateUserRoleSchema = z.object({
   isDeleted: z.boolean().optional(),
   isVerified: z.boolean().optional(),
   isApproved: z.boolean().optional(),
-  isBlocked: z.boolean().optional(),
+  isSuspend: z.boolean().optional(),
   driverInfo: z.string().optional(),
   riderInfo: z.string().optional(),
 });
