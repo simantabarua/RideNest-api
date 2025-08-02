@@ -1,1 +1,1 @@
-// index.ts - stub file 
+export const excludeField = ["searchTerm", "sort", "fields", "page", "limit"];

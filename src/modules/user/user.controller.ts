@@ -34,23 +34,7 @@ const updateUser = catchAsync(
   }
 );
 
-const getAllUsers = catchAsync(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async (req: Request, res: Response, next: NextFunction) => {
-    const users = await UserService.getAllUsers();
-    sendResponse(res, {
-      statusCode: StatusCodes.OK,
-      success: true,
-      message: "Users retrieved successfully",
-      data: users,
-      meta: {
-        total: users.length,
-      },
-    });
-  }
-);
 export const UserController = {
   createUser,
   updateUser,
-  getAllUsers,
 };
