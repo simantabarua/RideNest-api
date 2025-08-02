@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { AdminService } from "./admin.service";
+import { JwtPayload } from "jsonwebtoken";
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const query = req.query;
@@ -39,8 +40,13 @@ const getAllRides = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateUserRole = catchAsync(async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  const updatedUser = await AdminService.updateUserRole(userId, req.body);
+  const payload = req.body;
+  const updatedUser = await AdminService.updateUserInfo(
+    req.params.userId,
+    payload,
+    req.user as JwtPayload
+  );
+
   sendResponse(res, {
     statusCode: 200,
     success: true,

@@ -177,13 +177,17 @@ const completeRide = async (rideId: string, driverId: string) => {
   });
 
   updatedRide.payment = payment._id as Types.ObjectId;
+  const fare = updatedRide.fare || 0;
 
   await updatedRide.save();
 
   await DriverInfo.findOneAndUpdate(
     { driver: driverId },
     {
-      $inc: { completedRides: 1 },
+      $inc: {
+        completedRides: 1,
+        earnings: fare,
+      },
       $set: { isAvailable: true },
     }
   );

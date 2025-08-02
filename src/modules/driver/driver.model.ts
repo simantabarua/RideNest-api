@@ -23,8 +23,8 @@ const driverInfoSchema = new Schema<IDriverInfo>(
     vehicleInfo: vehicleInfoSchema,
     rating: { type: Number, default: 0 },
     completedRides: { type: Number, default: 0 },
+    earnings: { type: Number, default: 0 },
     isAvailable: { type: Boolean, default: true },
-    isVerified: { type: Boolean, default: false },
   },
   { timestamps: true, versionKey: false }
 );

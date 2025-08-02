@@ -21,10 +21,11 @@ const createUser = catchAsync(
 const updateUser = catchAsync(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.params.id;
     const payload = req.body;
     const verifiedUser = req.user as JwtPayload;
-    const user = await UserService.UpdateUser(userId, payload, verifiedUser);
+    const userId = verifiedUser.id;
+
+    const user = await UserService.UpdateUser(payload, userId);
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
@@ -34,7 +35,27 @@ const updateUser = catchAsync(
   }
 );
 
+const getProfile = catchAsync(async (req: Request, res: Response) => {
+  const { id: userId } = req.user as JwtPayload;
+  const driver = await UserService.getProfile(userId);
+  if (!driver) {
+    return sendResponse(res, {
+      statusCode: 404,
+      success: false,
+      message: "Driver not found",
+      data: null,
+    });
+  }
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Driver profile fetched",
+    data: driver,
+  });
+});
 export const UserController = {
   createUser,
   updateUser,
+  getProfile,
 };

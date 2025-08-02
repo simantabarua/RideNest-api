@@ -15,7 +15,6 @@ const getNewAccessToken = async (refreshToken: string) => {
 };
 interface ChangePasswordPayload {
   oldPassword: string;
-
   newPassword: string;
 }
 const changePassword = async (

@@ -4,6 +4,8 @@ import { Router } from "express";
 import { AdminController } from "./admin.controller";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
+import validateRequest from "../../middlewares/validatedRequest";
+import { updateUserRoleSchema } from "./admin.validation";
 
 const router = Router();
 
@@ -13,7 +15,8 @@ router.get(
   AdminController.getAllUsers
 );
 router.patch(
-  "/users/:userId/role",
+  "/users/:userId",
+  validateRequest(updateUserRoleSchema),
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
   AdminController.updateUserRole
 );

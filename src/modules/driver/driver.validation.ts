@@ -11,11 +11,11 @@ export const vehicleInfoSchema = z.object({
   registrationNumber: z.string(),
 });
 
-export const updateDiverZodSchema = z.object({
+export const updateDriverZodSchema = z.object({
   licenseNumber: z.string().optional(),
   vehicleInfo: vehicleInfoSchema.optional(),
   rating: z.number().nonnegative().optional(),
+  earning: z.number().nonnegative().optional(),
   completedRides: z.number().nonnegative().optional(),
   isAvailable: z.boolean().optional(),
-  isVerified: z.boolean().optional(),
 });

@@ -10,7 +10,7 @@ const router = Router();
 // Rider Routes
 router.post(
   "/request",
-  checkAuth(Role.RIDER),
+  checkAuth(...Object.values(Role)),
   validateRequest(createRideSchema),
   RideController.requestRide
 );
