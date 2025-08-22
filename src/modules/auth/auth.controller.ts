@@ -15,18 +15,33 @@ const credentialLogin = catchAsync(
     passport.authenticate(
       "local",
       { session: false },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      async (err: string, user: any, info: { message: string }) => {
+      async (
+        err: string,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        user: any,
+        info: { message: string; code?: string }
+      ) => {
         if (err) {
-          return next(new AppError(err, StatusCodes.UNAUTHORIZED));
+          return next(
+            new AppError(err, StatusCodes.UNAUTHORIZED, "GENERAL_ERROR")
+          );
         }
+
         if (!user) {
-          return next(new AppError(info.message, StatusCodes.UNAUTHORIZED));
+          return next(
+            new AppError(
+              info.message,
+              StatusCodes.UNAUTHORIZED,
+              info.code || "AUTH_UNKNOWN_ERROR"
+            )
+          );
         }
+
         const userToken = createUserToken(user);
         const userObj = user.toObject();
         delete userObj.password;
         setAuthCookies(res, userToken);
+
         sendResponse(res, {
           statusCode: StatusCodes.OK,
           success: true,

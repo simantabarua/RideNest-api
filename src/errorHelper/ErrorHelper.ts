@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { ZodError } from "zod";
 import { TErrorSources, TGenericErrorResponse } from "../interface/error.types";
 
-// Handle duplicate key error (MongoDB)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const handlerDuplicateError = (err: any): TGenericErrorResponse => {
   const matchedArray = err.message.match(/"([^"]*)"/);
@@ -11,6 +10,7 @@ export const handlerDuplicateError = (err: any): TGenericErrorResponse => {
   return {
     statusCode: 400,
     message: `${fieldName} already exists!`,
+    code: "DB_DUPLICATE_KEY",
   };
 };
 
@@ -20,18 +20,18 @@ export const handlerValidationError = (
 ): TGenericErrorResponse => {
   const errorSources: TErrorSources[] = [];
 
-  const errors = Object.values(err.errors);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  errors.forEach((errorObject: any) =>
+  Object.values(err.errors).forEach((errorObject: any) => {
     errorSources.push({
       path: errorObject?.path,
       message: errorObject?.message,
-    })
-  );
+    });
+  });
 
   return {
     statusCode: 400,
     message: "Validation Error",
+    code: "DB_VALIDATION_ERROR",
     errorSources,
   };
 };
@@ -43,6 +43,7 @@ export const handlerCastError = (
   return {
     statusCode: 400,
     message: `Invalid value for ${err.path}: ${err.value}`,
+    code: "DB_CAST_ERROR",
   };
 };
 
@@ -60,6 +61,7 @@ export const handlerZodError = (err: ZodError): TGenericErrorResponse => {
   return {
     statusCode: 400,
     message: "Validation Error",
+    code: "VALIDATION_ERROR",
     errorSources,
   };
 };

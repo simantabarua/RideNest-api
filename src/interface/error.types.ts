@@ -1,4 +1,3 @@
-
 export interface TErrorSources {
   path: string;
   message: string;
@@ -7,5 +6,6 @@ export interface TErrorSources {
 export interface TGenericErrorResponse {
   statusCode: number;
   message: string;
+  code?: string;
   errorSources?: TErrorSources[];
 }

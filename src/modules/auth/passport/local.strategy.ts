@@ -1,6 +1,10 @@
-import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as LocalStrategy, IVerifyOptions } from "passport-local";
 import User from "../../user/user.model";
 import bcryptjs from "bcryptjs";
+
+interface ICustomVerifyOptions extends IVerifyOptions {
+  code?: string;
+}
 
 export const localStrategy = new LocalStrategy(
   {
@@ -12,7 +16,11 @@ export const localStrategy = new LocalStrategy(
       const user = await User.findOne({ email });
 
       if (!user) {
-        return done(null, false, { message: "User not found" });
+        const info: ICustomVerifyOptions = {
+          message: "User not found",
+          code: "AUTH_USER_NOT_FOUND",
+        };
+        return done(null, false, info);
       }
 
       const isGoogleAuth = user.auths?.some(
@@ -20,19 +28,30 @@ export const localStrategy = new LocalStrategy(
       );
 
       if (isGoogleAuth && !user.password) {
-        return done(null, false, {
-          message: "This user has logged in with Google. Please use Google login.",
-        });
+        const info: ICustomVerifyOptions = {
+          message:
+            "This user has logged in with Google. Please use Google login.",
+          code: "AUTH_GOOGLE_USER",
+        };
+        return done(null, false, info);
       }
 
       if (!user.password) {
-        return done(null, false, { message: "Password not set" });
+        const info: ICustomVerifyOptions = {
+          message: "Password not set",
+          code: "AUTH_PASSWORD_NOT_SET",
+        };
+        return done(null, false, info);
       }
 
       const isPasswordValid = await bcryptjs.compare(password, user.password);
 
       if (!isPasswordValid) {
-        return done(null, false, { message: "Invalid password" });
+        const info: ICustomVerifyOptions = {
+          message: "Invalid email or password",
+          code: "AUTH_INVALID_CREDENTIALS",
+        };
+        return done(null, false, info);
       }
 
       return done(null, user);

@@ -35,4 +35,6 @@ export interface IUser {
   updatedAt?: Date;
   driverInfo?: string;
   riderInfo?: string;
+  agreeToTerms: boolean;
+  agreeToMarketing: boolean;
 }

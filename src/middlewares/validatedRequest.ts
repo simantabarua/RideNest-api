@@ -14,6 +14,7 @@ const validateRequest =
         message: "Validation failed",
         error: err,
       });
+      console.log(err)
     }
   };
 

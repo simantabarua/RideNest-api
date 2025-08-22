@@ -37,6 +37,8 @@ const userSchema = new Schema<IUser>(
 
     driverInfo: { type: Schema.Types.ObjectId, ref: "DriverInfo" },
     riderInfo: { type: Schema.Types.ObjectId, ref: "RiderInfo" },
+    agreeToTerms: { type: Boolean, default: false },
+    agreeToMarketing: { type: Boolean, default: false },
   },
   {
     timestamps: true,

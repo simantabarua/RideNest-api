@@ -7,11 +7,17 @@ import { envVars } from "./config/env";
 import { router } from "./routes";
 import { notFound } from "./middlewares/notFound";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
-import "./modules/auth/passport/index";
 import { configurePassport } from "./modules/auth/passport/index";
+
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: envVars.FRONTEND_URL,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -20,8 +26,14 @@ app.use(
     secret: envVars.EXPRESS_SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    },
   })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 configurePassport();

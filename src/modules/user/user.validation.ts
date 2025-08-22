@@ -44,8 +44,11 @@ export const createUserZodSchema = z
     name: nameSchema,
     email: emailSchema,
     password: passwordSchema,
+    confirmPassword: z.string(),
     phone: phoneSchema.optional(),
     address: addressSchema.optional(),
+    agreeToTerms: z.boolean().optional(),
+    agreeToMarketing: z.boolean().optional(),
   })
   .strict();
 

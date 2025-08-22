@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
-import { StatusCodes } from "http-status-codes";
 import AppError from "../errorHelper/AppError";
 import { envVars } from "../config/env";
 import { TErrorSources } from "../interface/error.types";
@@ -18,7 +17,7 @@ export const globalErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  let statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+  let customCode = "UNKNOWN_ERROR";
   let message = "An unexpected error occurred";
   let errorSources: TErrorSources[] = [];
 
@@ -30,43 +29,47 @@ export const globalErrorHandler = (
   // MongoDB duplicate key error
   if (err.code === 11000) {
     const simplifiedError = handlerDuplicateError(err);
-    statusCode = simplifiedError.statusCode;
+    customCode = "DB_DUPLICATE_KEY";
     message = simplifiedError.message;
   }
   // Mongoose CastError
   else if (err.name === "CastError") {
     const simplifiedError = handlerCastError(err);
-    statusCode = simplifiedError.statusCode;
+    customCode = "DB_CAST_ERROR";
     message = simplifiedError.message;
   }
   // Zod schema validation error
   else if (err.name === "ZodError") {
     const simplifiedError = handlerZodError(err);
-    statusCode = simplifiedError.statusCode;
+    customCode = "VALIDATION_ERROR";
     message = simplifiedError.message;
     errorSources = simplifiedError.errorSources ?? [];
   }
   // Mongoose validation error
   else if (err.name === "ValidationError") {
     const simplifiedError = handlerValidationError(err);
-    statusCode = simplifiedError.statusCode;
+    customCode = "DB_VALIDATION_ERROR";
     message = simplifiedError.message;
     errorSources = simplifiedError.errorSources ?? [];
   }
   // Custom application error
   else if (err instanceof AppError) {
-    statusCode = err.statusCode;
+    customCode = err.code ?? "APP_ERROR";
     message = err.message;
   }
   // General JS Error
   else if (err instanceof Error) {
+    customCode = "GENERAL_ERROR";
     message = err.message;
   }
 
-  res.status(statusCode).json({
+  // Use proper HTTP status code
+  const responseStatus = err.statusCode || 500;
+
+  res.status(responseStatus).json({
     success: false,
+    code: customCode,
     message,
-    statusCode,
     errorSources,
     err: envVars.NODE_ENV === "development" ? err : undefined,
     stack: envVars.NODE_ENV === "development" ? err.stack : undefined,
