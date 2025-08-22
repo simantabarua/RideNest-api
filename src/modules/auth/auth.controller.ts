@@ -36,7 +36,15 @@ const credentialLogin = catchAsync(
             )
           );
         }
-
+        if (!user.isVerified) {
+          return next(
+            new AppError(
+              "User is not verified",
+              StatusCodes.UNAUTHORIZED,
+              "AUTH_USER_NOT_VERIFIED"
+            )
+          );
+        }
         const userToken = createUserToken(user);
         const userObj = user.toObject();
         delete userObj.password;

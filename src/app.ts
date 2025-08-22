@@ -8,6 +8,7 @@ import { router } from "./routes";
 import { notFound } from "./middlewares/notFound";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import { configurePassport } from "./modules/auth/passport/index";
+import { connectRedis } from "./config/redis.config";
 
 const app = express();
 
@@ -28,12 +29,12 @@ app.use(
     saveUninitialized: true,
     cookie: {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     },
   })
 );
-
+connectRedis();
 app.use(passport.initialize());
 app.use(passport.session());
 configurePassport();
