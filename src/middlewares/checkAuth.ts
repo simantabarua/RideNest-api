@@ -7,7 +7,7 @@ import User from "../modules/user/user.model";
 export const checkAuth =
   (...authRoles: string[]) =>
   async (req: Request, res: Response, next: NextFunction) => {
-    const accessToken = req.headers.authorization;
+    const accessToken = req.cookies?.accessToken || req.headers?.authorization;
     try {
       if (!accessToken) {
         throw new AppError(
