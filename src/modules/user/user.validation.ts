@@ -56,9 +56,22 @@ export const updateUserZodSchema = z
   .object({
     name: nameSchema.optional(),
     email: emailSchema.optional(),
-    password: passwordSchema.optional(),
+    currentPassword: passwordSchema.optional(),
+    newPassword: passwordSchema.optional(),
+    confirmPassword: z.string().optional(),
     phone: phoneSchema.optional(),
     address: addressSchema.optional(),
     picture: z.string().optional().or(z.literal("")).optional(),
+    driverInfo: z.string().optional(),
+    riderInfo: z.string().optional(),
+    role: z.enum(["USER", "DRIVER", "ADMIN"]).optional(),
+    licenseNumber: z.string().optional(),
+    vehicleInfo: z
+      .object({
+        type: z.string(),
+        model: z.string(),
+        registrationNumber: z.string(),
+      })
+      .optional(),
   })
   .strict();

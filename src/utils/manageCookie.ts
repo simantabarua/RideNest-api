@@ -5,7 +5,6 @@ export interface TokenInfo {
   refreshToken?: string;
 }
 
-
 const baseCookieOptions = {
   httpOnly: true,
   secure: true,
@@ -14,7 +13,7 @@ const baseCookieOptions = {
 
 const accessTokenOptions = {
   ...baseCookieOptions,
-  maxAge: 1000 * 60 * 15,
+  maxAge: 1000 * 60 * 60 * 24 * 7,
 };
 
 const refreshTokenOptions = {

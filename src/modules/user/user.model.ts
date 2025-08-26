@@ -20,6 +20,8 @@ const userSchema = new Schema<IUser>(
       trim: true,
     },
     password: { type: String },
+    newPassword: { type: String },
+    currentPassword: { type: String },
     phone: { type: String },
     picture: { type: String },
     address: { type: String },

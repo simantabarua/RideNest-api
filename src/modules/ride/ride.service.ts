@@ -59,7 +59,6 @@ const createRide = async (data: IRideRequest, riderId: string) => {
   });
 };
 
-//  Get Rides
 const getRidesByUser = async (userId: string) => {
   return Ride.find({ $or: [{ rider: userId }, { driver: userId }] })
     .sort({ createdAt: -1 })
@@ -73,14 +72,30 @@ const getAllRides = async () => {
     .populate("rider", "name email")
     .populate("driver", "name email");
 };
-
+const getAllRequestedRides = async () => {
+  return Ride.find({ status: RideStatus.REQUESTED })
+    .sort({ createdAt: -1 })
+    .populate("rider", "name email")
+    .populate("driver", "name email");
+};
 const getRideById = async (rideId: string) => {
   return Ride.findById(rideId)
     .populate("rider", "name email")
     .populate("driver", "name email");
 };
 
-// Cancel Ride
+const getActiveRideByDriver = async (driverId: string) => {
+  return Ride.find({
+    driver: driverId,
+    status: {
+      $in: [RideStatus.ACCEPTED, RideStatus.PICKED_UP, RideStatus.IN_TRANSIT],
+    },
+  })
+    .sort({ createdAt: -1 })
+    .populate("rider", "name email")
+    .populate("driver", "name email");
+};
+
 const cancelRide = async (
   rideId: string,
   userId: string,
@@ -310,5 +325,7 @@ export const RideService = {
   rejectRide,
   pickupRide,
   startRide,
+  getAllRequestedRides,
   completeRide,
+  getActiveRideByDriver,
 };

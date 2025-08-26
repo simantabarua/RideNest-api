@@ -30,5 +30,21 @@ router.get(
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
   AdminController.getDashboardStats
 );
+router.get(
+  "/rides",
+  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  AdminController.getAllRides
+)
+router.get(
+  "/drivers",
+  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  AdminController.getAllDrivers
+);
+
+router.get(
+  "/drivers-stats",
+  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  AdminController.getDriverStats
+);
 
 export const AdminRoute = router;

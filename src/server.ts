@@ -3,7 +3,7 @@ import { Server } from "http";
 import { envVars } from "./config/env";
 import app from "./app";
 import { dbConnect } from "./config/database";
-import { seedSuperAdmin } from "./utils/seedSuperAdmin";
+import { seedAdmin, seedDriver, seedRider, seedSuperAdmin } from "./utils/seedSuperAdmin";
 
 let server: Server;
 
@@ -22,6 +22,9 @@ const startServer = async () => {
   try {
     await startServer();
     await seedSuperAdmin();
+    await seedAdmin();
+    await seedDriver();
+    await seedRider();
   } catch (error) {
     console.error("❌ Error during initialization:", error);
     process.exit(1);

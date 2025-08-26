@@ -27,7 +27,7 @@ const getMyRides = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getAllRides = catchAsync(async (_req: Request, res: Response) => {
+const getAllRides = catchAsync(async (req: Request, res: Response) => {
   const rides = await RideService.getAllRides();
   sendResponse(res, {
     statusCode: 200,
@@ -36,6 +36,28 @@ const getAllRides = catchAsync(async (_req: Request, res: Response) => {
     data: rides,
   });
 });
+const getAllRequestedRides = catchAsync(
+  async (_req: Request, res: Response) => {
+    const rides = await RideService.getAllRequestedRides();
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "All requested retrieved",
+      data: rides,
+    });
+  }
+);
+const getActiveRideByDriver = catchAsync(
+  async (req: Request, res: Response) => {
+    const rides = await RideService.getActiveRideByDriver(withUser(req));
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "All active retrieved",
+      data: rides,
+    });
+  }
+);
 
 const getRideById = catchAsync(async (req: Request, res: Response) => {
   const ride = await RideService.getRideById(req.params.id);
@@ -102,4 +124,6 @@ export const RideController = {
   pickupRide,
   startRide,
   completeRide,
+  getAllRequestedRides,
+  getActiveRideByDriver,
 };

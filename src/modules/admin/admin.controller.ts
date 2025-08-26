@@ -16,10 +16,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllDrivers = catchAsync(async (req: Request, res: Response) => {
-  const query = req.query;
-  const drivers = await AdminService.getAllDrivers(
-    query as Record<string, string>
-  );
+  const drivers = await AdminService.getAllDrivers();
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -76,6 +73,16 @@ const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getDriverStats = catchAsync(async (req: Request, res: Response) => {
+  const stats = await AdminService.getDriverStats();
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Driver stats retrieved",
+    data: stats,
+  });
+});
+
 export const AdminController = {
   getAllUsers,
   getAllDrivers,
@@ -83,4 +90,5 @@ export const AdminController = {
   updateUserRole,
   deleteUser,
   getDashboardStats,
+  getDriverStats,
 };

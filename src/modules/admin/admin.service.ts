@@ -2,14 +2,13 @@ import { DriverInfo } from "../driver/driver.model";
 import { Ride } from "../ride/ride.model";
 import { IUser } from "../user/user.interface";
 import { IRide } from "../ride/ride.interface";
-import { IDriverInfo } from "../driver/driver.interface";
 import { Role } from "../user/user.interface";
 import AppError from "../../errorHelper/AppError";
 import { StatusCodes } from "http-status-codes";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import User from "../user/user.model";
 import { JwtPayload } from "jsonwebtoken";
-import { updateDriverZodSchema } from "../driver/driver.validation";
+
 
 const getAllUsers = async (query: Record<string, string>) => {
   const builder = new QueryBuilder<IUser>(User.find(), query)
@@ -25,21 +24,9 @@ const getAllUsers = async (query: Record<string, string>) => {
   return { meta, data };
 };
 
-const getAllDrivers = async (query: Record<string, string>) => {
-  const builder = new QueryBuilder<IDriverInfo>(
-    DriverInfo.find().populate("user"),
-    query
-  )
-    .filter()
-    .search(["licenseNumber", "vehicleInfo.model"])
-    .sort()
-    .fields()
-    .paginate();
-
-  const data = await builder.build();
-  const meta = await builder.getMeta();
-
-  return { meta, data };
+const getAllDrivers = async () => {
+  const drivers = await User.find({ role: Role.DRIVER });
+  return drivers;
 };
 
 const getAllRides = async (query: Record<string, string>) => {
@@ -100,37 +87,6 @@ export const updateUserInfo = async (
     }
   }
 
-  if (payload.role === Role.DRIVER) {
-    try {
-      const parsedDriverData = updateDriverZodSchema.parse(payload);
-
-      const driverInfo = await DriverInfo.findOneAndUpdate(
-        { driver: userId },
-        {
-          $set: {
-            driver: userId,
-            ...parsedDriverData,
-          },
-        },
-        {
-          upsert: true,
-          new: true,
-          setDefaultsOnInsert: true,
-        }
-      );
-
-      if (driverInfo) {
-        payload.driverInfo = driverInfo._id;
-      }
-      payload.isApproved = true;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      throw new AppError(
-        "Invalid driver information: " + error.message,
-        StatusCodes.BAD_REQUEST
-      );
-    }
-  }
 
   const updatedUser = await User.findByIdAndUpdate(userId, payload, {
     new: true,
@@ -158,14 +114,36 @@ const deleteUser = async (userId: string) => {
 };
 
 const getDashboardStats = async () => {
-  const totalUsers = await User.countDocuments({ role: Role.RIDER });
+  const totalUsers = await User.countDocuments({});
   const totalDrivers = await User.countDocuments({ role: Role.DRIVER });
+  const totalRiders = await User.countDocuments({ role: Role.RIDER });
   const totalRides = await Ride.countDocuments();
 
   return {
     totalUsers,
     totalDrivers,
     totalRides,
+    totalRiders,
+  };
+};
+const getDriverStats = async () => {
+  const totalDrivers = await User.countDocuments({ role: Role.DRIVER });
+  const onlineDrivers = await DriverInfo.countDocuments({ isAvailable: true });
+  const pendingDrivers = await User.countDocuments({
+    role: Role.DRIVER,
+    isApproved: false,
+  });
+  const activeDrivers = await User.countDocuments({
+    role: Role.DRIVER,
+    isDeleted: false,
+    isSuspend: false,
+  });
+
+  return {
+    totalDrivers,
+    onlineDrivers,
+    pendingDrivers,
+    activeDrivers,
   };
 };
 
@@ -176,4 +154,5 @@ export const AdminService = {
   updateUserInfo,
   deleteUser,
   getDashboardStats,
+  getDriverStats,
 };

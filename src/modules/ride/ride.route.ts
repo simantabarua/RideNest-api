@@ -60,6 +60,16 @@ router.patch(
   RideController.completeRide
 );
 
+router.get(
+  "/requested",
+  checkAuth(...Object.values(Role)),
+  RideController.getAllRequestedRides
+);
+router.get(
+  "/active",
+  checkAuth(...Object.values(Role)),
+  RideController.getActiveRideByDriver
+)
 // Admin + Shared
 router.get("/", checkAuth(Role.ADMIN), RideController.getAllRides);
 

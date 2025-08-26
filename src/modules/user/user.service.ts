@@ -3,6 +3,7 @@ import AppError from "../../errorHelper/AppError";
 import { envVars } from "../../config/env";
 import User from "./user.model";
 import bcryptjs from "bcryptjs";
+import { DriverInfo } from "../driver/driver.model";
 
 const createUser = async (payload: Partial<IUser>) => {
   const { email, password, ...rest } = payload;
@@ -51,20 +52,66 @@ const UpdateUser = async (
   if (!user) {
     throw new AppError("User not found", 500, "USER_NOT_FOUND");
   }
-
   if (user.isDeleted) {
     throw new AppError("User is deleted", 500, "USER_IS_DELETED");
   }
+  if (payload.currentPassword) {
+    const { newPassword, currentPassword } = payload;
+    const isCurrentValid = bcryptjs.compareSync(
+      currentPassword as string,
+      user.password as string
+    );
+    if (!isCurrentValid) {
+      throw new AppError(
+        "Invalid current password",
+        500,
+        "AUTH_INVALID_CURRENT_PASSWORD"
+      );
+    }
 
-  if (payload.password) {
+    if (newPassword === currentPassword) {
+      throw new AppError(
+        "New password is same as old password",
+        500,
+        "NEW_PASSWORD_SAME_AS_OLD_PASSWORD"
+      );
+    }
+
     user.password = bcryptjs.hashSync(
-      payload.password,
+      newPassword as string,
       Number(envVars.BCRYPT_SALT_ROUND)
     );
     await user.save();
     delete payload.password;
   }
+  if (payload.role === Role.DRIVER) {
+    try {
+      const driverInfo = await DriverInfo.findOneAndUpdate(
+        { driver: userId },
+        {
+          $set: {
+            driver: userId,
+            ...payload,
+          },
+        },
+        {
+          upsert: true,
+          new: true,
+          setDefaultsOnInsert: true,
+        }
+      );
 
+      if (!driverInfo) {
+        throw new Error("Failed to create/update driver information");
+      }
+
+      payload.driverInfo = driverInfo._id;
+      payload.isApproved = false;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      throw new AppError("Invalid driver information: " + error.message, 500);
+    }
+  }
   const allowedUserFields = ["name", "phone", "address", "picture"] as const;
   allowedUserFields.forEach((field) => {
     if (payload[field] !== undefined) {
