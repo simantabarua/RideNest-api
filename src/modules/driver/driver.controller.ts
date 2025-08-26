@@ -27,18 +27,18 @@ const setAvailability = catchAsync(async (req: Request, res: Response) => {
     data: updatedDriver,
   });
 });
-
-const getEarnings = catchAsync(async (req: Request, res: Response) => {
+const isAvailable = catchAsync(async (req: Request, res: Response) => {
   const { id: userId } = req.user as JwtPayload;
-  const totalEarnings = await DriverService.getEarnings(userId);
+  const isAvailable = await DriverService.isAvailable(userId);
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Driver earnings fetched",
-    data: { totalEarnings },
+    message: "Driver availability fetched",
+    data: isAvailable,
   });
 });
+
 export const DriverController = {
-  getEarnings,
   setAvailability,
+  isAvailable,
 };

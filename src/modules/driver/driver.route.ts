@@ -7,8 +7,11 @@ import { setAvailabilitySchema } from "./driver.validation";
 
 const router = Router();
 
-router.get("/earnings", checkAuth(Role.DRIVER), DriverController.getEarnings);
-
+router.get(
+  "/availability",
+  checkAuth(Role.DRIVER),
+  DriverController.isAvailable
+);
 router.patch(
   "/availability",
   checkAuth(Role.DRIVER),

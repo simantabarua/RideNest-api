@@ -116,6 +116,24 @@ const cancelRide = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const getRiderRidesStats = catchAsync(async (req: Request, res: Response) => {
+  const stats = await RideService.getRiderRidesStats(withUser(req));
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Ride stats retrieved",
+    data: stats,
+  });
+});
+const getDriverRidesStats = catchAsync(async (req: Request, res: Response) => {
+  const stats = await RideService.getDriverRidesStats(withUser(req));
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Ride stats retrieved",
+    data: stats,
+  });
+})
 const acceptRide = transition(RideService.acceptRide, "Ride accepted");
 const rejectRide = transition(RideService.rejectRide, "Ride rejected");
 const pickupRide = transition(RideService.pickupRide, "Ride picked up");
@@ -136,4 +154,6 @@ export const RideController = {
   getAllRequestedRides,
   getActiveRideByDriver,
   getActiveRideByRider,
+  getRiderRidesStats,
+  getDriverRidesStats
 };

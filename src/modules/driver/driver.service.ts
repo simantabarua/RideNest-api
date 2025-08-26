@@ -1,34 +1,40 @@
 import AppError from "../../errorHelper/AppError";
 import { StatusCodes } from "http-status-codes";
-import User from "../user/user.model";
 import { DriverInfo } from "./driver.model";
+import { Types } from "mongoose";
 
-const setAvailability = async (driverId: string, isAvailable: boolean) => {
-  const updated = await User.findOneAndUpdate(
-    { _id: driverId },
-    { isAvailable },
+export const setAvailability = async (
+  driverId: string,
+  isAvailable: boolean
+) => {
+  const updated = await DriverInfo.findOneAndUpdate(
+    {
+      $or: [{ driver: driverId }, { driver: new Types.ObjectId(driverId) }],
+    },
+    { $set: { isAvailable } },
     { new: true }
   );
 
   if (!updated) {
     throw new AppError("Driver not found", StatusCodes.NOT_FOUND);
   }
-  return true;
+
+  return { isAvailable: updated.isAvailable };
 };
 
-const getEarnings = async (userId: string) => {
-  const driverInfo = await DriverInfo.findOne({ driver: userId }).select(
-    "earnings"
-  );
+export const isAvailable = async (driverId: string) => {
+  const driver = await DriverInfo.findOne({
+    driver: new Types.ObjectId(driverId),
+  });
 
-  if (!driverInfo) {
-    throw new AppError("Driver info not found", StatusCodes.NOT_FOUND);
+  if (!driver) {
+    throw new AppError("Driver not found", StatusCodes.NOT_FOUND);
   }
 
-  return driverInfo.earnings || 0;
+  return { isAvailable: driver.isAvailable };
 };
 
 export const DriverService = {
-  getEarnings,
   setAvailability,
+  isAvailable,
 };

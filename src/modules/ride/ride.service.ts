@@ -338,6 +338,89 @@ const progressRideStatus = async (
   return getRideById(ride._id.toString());
 };
 
+const getRiderRidesStats = async (riderId: string) => {
+  if (!Types.ObjectId.isValid(riderId)) {
+    throw new Error("Invalid rider ID");
+  }
+
+  const stats = await Ride.aggregate([
+    { $match: { rider: new Types.ObjectId(riderId) } },
+    {
+      $group: {
+        _id: "$rider",
+        totalRides: { $sum: 1 },
+        totalCompletedRides: {
+          $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] },
+        },
+        totalCancelledRides: {
+          $sum: { $cond: [{ $eq: ["$status", "cancelled"] }, 1, 0] },
+        },
+        totalSpent: {
+          $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$fare", 0] },
+        },
+      },
+    },
+  ]);
+
+  const result = stats[0] || {
+    totalRides: 0,
+    totalCompletedRides: 0,
+    totalCancelledRides: 0,
+    totalSpent: 0,
+  };
+
+  return [
+    { title: "Total Rides", value: result.totalRides.toString() },
+    { title: "Completed Rides", value: result.totalCompletedRides.toString() },
+    { title: "Cancelled Rides", value: result.totalCancelledRides.toString() },
+    { title: "Total Spent", value: result.totalSpent.toString() },
+  ];
+};
+
+
+export const getDriverRidesStats = async (driverId: string) => {
+  if (!Types.ObjectId.isValid(driverId)) {
+    throw new Error("Invalid driver ID");
+  }
+  const stats = await Ride.aggregate([
+    { $match: { driver: new Types.ObjectId(driverId) } },
+    {
+      $group: {
+        _id: "$driver",
+        totalRides: { $sum: 1 },
+        totalCompletedRides: {
+          $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] },
+        },
+        totalEarnings: {
+          $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$fare", 0] },
+        },
+      },
+    },
+  ]);
+  const ratings = await DriverInfo.aggregate([
+    { $match: { driver: new Types.ObjectId(driverId) } },
+    {
+      $group: {
+        _id: "$driver",
+        avgRating: { $avg: "$rating" },
+      },
+    },
+  ]);
+  const result = {
+    totalRides: stats[0]?.totalRides || 0,
+    totalCompletedRides: stats[0]?.totalCompletedRides || 0,
+    totalEarnings: stats[0]?.totalEarnings || 0,
+    avgRating: ratings[0]?.avgRating || 0,
+  };
+
+  return [
+    { title: "Total Rides", value: result.totalRides.toString() },
+    { title: "Completed Rides", value: result.totalCompletedRides.toString() },
+    { title: "Total Earnings", value: result.totalEarnings.toString() },
+    { title: "Average Rating", value: result.avgRating.toFixed(1) },
+  ];
+};
+
 export const RideService = {
   createRide,
   getRidesByUser,
@@ -352,4 +435,6 @@ export const RideService = {
   completeRide,
   getActiveRideByDriver,
   getActiveRideByRider,
+  getRiderRidesStats,
+  getDriverRidesStats,
 };

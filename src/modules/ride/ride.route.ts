@@ -16,6 +16,16 @@ router.post(
 );
 
 router.get("/my", checkAuth(...Object.values(Role)), RideController.getMyRides);
+router.get(
+  "/stats/rider",
+  checkAuth(Role.RIDER),
+  RideController.getRiderRidesStats
+);
+router.get(
+  "/stats/driver",
+  checkAuth(Role.DRIVER),
+  RideController.getDriverRidesStats
+);
 
 router.patch(
   "/:id/cancel",
