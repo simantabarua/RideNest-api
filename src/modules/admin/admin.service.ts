@@ -8,7 +8,7 @@ import { StatusCodes } from "http-status-codes";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import User from "../user/user.model";
 import { JwtPayload } from "jsonwebtoken";
-
+import { updateDriverZodSchema } from "../driver/driver.validation";
 
 const getAllUsers = async (query: Record<string, string>) => {
   const builder = new QueryBuilder<IUser>(User.find(), query)
@@ -87,6 +87,37 @@ export const updateUserInfo = async (
     }
   }
 
+  if (payload.role === Role.DRIVER) {
+    try {
+      const parsedDriverData = updateDriverZodSchema.parse(payload);
+
+      const driverInfo = await DriverInfo.findOneAndUpdate(
+        { driver: userId },
+        {
+          $set: {
+            driver: userId,
+            ...parsedDriverData,
+          },
+        },
+        {
+          upsert: true,
+          new: true,
+          setDefaultsOnInsert: true,
+        }
+      );
+
+      if (driverInfo) {
+        payload.driverInfo = driverInfo._id;
+      }
+      payload.isApproved = true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      throw new AppError(
+        "Invalid driver information: " + error.message,
+        StatusCodes.BAD_REQUEST
+      );
+    }
+  }
 
   const updatedUser = await User.findByIdAndUpdate(userId, payload, {
     new: true,

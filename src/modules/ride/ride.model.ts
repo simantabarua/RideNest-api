@@ -21,6 +21,14 @@ const rideSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    estimatedDistance: {
+      type: Number,
+      required: true,
+    },
+    estimatedTime: {
+      type: Number,
+      required: true,
+    },
     status: {
       type: String,
       enum: Object.values(RideStatus),
@@ -28,6 +36,15 @@ const rideSchema = new mongoose.Schema(
     },
     fare: {
       type: Number,
+    },
+    totalFare: {
+      type: Number,
+    },
+    rating: {
+      type: Number,
+    },
+    review: {
+      type: String,
     },
     payment: {
       type: Schema.Types.ObjectId,

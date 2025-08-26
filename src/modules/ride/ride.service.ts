@@ -35,7 +35,6 @@ const ensureDriverHasNoActiveRide = async (driverId: string) => {
   }
 };
 
-// Create Ride
 const createRide = async (data: IRideRequest, riderId: string) => {
   const activeRide = await Ride.findOne({
     rider: riderId,
@@ -62,15 +61,15 @@ const createRide = async (data: IRideRequest, riderId: string) => {
 const getRidesByUser = async (userId: string) => {
   return Ride.find({ $or: [{ rider: userId }, { driver: userId }] })
     .sort({ createdAt: -1 })
-    .populate("rider", "name email")
-    .populate("driver", "name email");
+    .populate("rider", "name email phone")
+    .populate("driver", "name email phone vehicleInfo licenseNumber rating");
 };
 
 const getAllRides = async () => {
   return Ride.find()
     .sort({ createdAt: -1 })
     .populate("rider", "name email")
-    .populate("driver", "name email");
+    .populate("driver", "name email phone vehicleInfo licenseNumber rating");
 };
 const getAllRequestedRides = async () => {
   return Ride.find({ status: RideStatus.REQUESTED })
@@ -89,6 +88,23 @@ const getActiveRideByDriver = async (driverId: string) => {
     driver: driverId,
     status: {
       $in: [RideStatus.ACCEPTED, RideStatus.PICKED_UP, RideStatus.IN_TRANSIT],
+    },
+  })
+    .sort({ createdAt: -1 })
+    .populate("rider", "name email")
+    .populate("driver", "name email");
+};
+
+const getActiveRideByRider = async (riderId: string) => {
+  return Ride.find({
+    rider: riderId,
+    status: {
+      $in: [
+        RideStatus.REQUESTED,
+        RideStatus.ACCEPTED,
+        RideStatus.PICKED_UP,
+        RideStatus.IN_TRANSIT,
+      ],
     },
   })
     .sort({ createdAt: -1 })
@@ -152,10 +168,18 @@ const cancelRide = async (
   return getRideById(ride._id.toString());
 };
 
-// Accept Ride
 const acceptRide = async (rideId: string, driverId: string) => {
+  const isDriverApproved = await User.findOne({
+    _id: driverId,
+    isApproved: true,
+  });
+  if (!isDriverApproved) {
+    throw new AppError(
+      "Your driver account is not approved. You cannot accept rides at this time. Please contact the administrator for assistance.",
+      StatusCodes.BAD_REQUEST
+    );
+  }
   await ensureUserIsActive(driverId);
-
   const ride = await Ride.findById(rideId);
   if (!ride) throw new AppError("Ride not found", StatusCodes.NOT_FOUND);
 
@@ -183,7 +207,6 @@ const acceptRide = async (rideId: string, driverId: string) => {
   return getRideById(ride._id.toString());
 };
 
-// Reject Ride
 const rejectRide = async (rideId: string, driverId: string) => {
   await ensureUserIsActive(driverId);
 
@@ -328,4 +351,5 @@ export const RideService = {
   getAllRequestedRides,
   completeRide,
   getActiveRideByDriver,
+  getActiveRideByRider,
 };

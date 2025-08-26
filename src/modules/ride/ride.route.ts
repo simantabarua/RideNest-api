@@ -66,11 +66,16 @@ router.get(
   RideController.getAllRequestedRides
 );
 router.get(
-  "/active",
+  "/active/driver",
   checkAuth(...Object.values(Role)),
   RideController.getActiveRideByDriver
-)
-// Admin + Shared
+);
+router.get(
+  "/active/rider",
+  checkAuth(...Object.values(Role)),
+  RideController.getActiveRideByRider
+);
+
 router.get("/", checkAuth(Role.ADMIN), RideController.getAllRides);
 
 router.get(

@@ -12,6 +12,9 @@ export const createRideSchema = z.object({
   fare: z
     .number({ message: "Fare must be a number." })
     .nonnegative({ message: "Fare must be a non-negative value." }),
+
+  estimatedDistance: z.number(),
+  estimatedTime: z.number(),
 });
 
 export const cancelRideSchema = z.object({

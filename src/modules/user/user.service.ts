@@ -4,6 +4,7 @@ import { envVars } from "../../config/env";
 import User from "./user.model";
 import bcryptjs from "bcryptjs";
 import { DriverInfo } from "../driver/driver.model";
+import { updateDriverZodSchema } from "../driver/driver.validation";
 
 const createUser = async (payload: Partial<IUser>) => {
   const { email, password, ...rest } = payload;
@@ -85,13 +86,57 @@ const UpdateUser = async (
     delete payload.password;
   }
   if (payload.role === Role.DRIVER) {
+    const isDriver = await DriverInfo.findOne({ driver: userId });
+    if (isDriver) {
+      const checkIsApproved = user.isApproved;
+      if (!checkIsApproved) {
+        throw new AppError(
+          "You have already submitted your driver information, please wait for approval",
+          400,
+          "DRIVER_ALREADY_SUBMITTED"
+        );
+      }
+    }
+
+    const parsedDriverData = updateDriverZodSchema.parse(payload);
+
+    // Check for duplicate license number
+    if (parsedDriverData.licenseNumber) {
+      const existingLicense = await DriverInfo.findOne({
+        licenseNumber: parsedDriverData.licenseNumber,
+        driver: { $ne: userId },
+      });
+      if (existingLicense) {
+        throw new AppError(
+          "License number already exists",
+          400,
+          "DUPLICATE_LICENSE"
+        );
+      }
+    }
+
+    if (parsedDriverData.vehicleInfo?.registrationNumber) {
+      const existingVehicle = await DriverInfo.findOne({
+        "vehicleInfo.registrationNumber":
+          parsedDriverData.vehicleInfo.registrationNumber,
+        driver: { $ne: userId },
+      });
+      if (existingVehicle) {
+        throw new AppError(
+          "Registration number already exists",
+          400,
+          "DUPLICATE_REGISTRATION"
+        );
+      }
+    }
+
     try {
       const driverInfo = await DriverInfo.findOneAndUpdate(
         { driver: userId },
         {
           $set: {
             driver: userId,
-            ...payload,
+            ...parsedDriverData,
           },
         },
         {
@@ -107,11 +152,12 @@ const UpdateUser = async (
 
       payload.driverInfo = driverInfo._id;
       payload.isApproved = false;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      throw new AppError("Invalid driver information: " + error.message, 500);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new AppError("Invalid driver information: ", 500);
     }
   }
+
   const allowedUserFields = ["name", "phone", "address", "picture"] as const;
   allowedUserFields.forEach((field) => {
     if (payload[field] !== undefined) {
