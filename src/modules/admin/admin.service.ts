@@ -25,8 +25,8 @@ const getAllUsers = async (query: Record<string, string>) => {
   return { meta, data };
 };
 
-const getAllDrivers = async () => {
-  const drivers = await User.find({ role: Role.DRIVER });
+export const getAllDrivers = async () => {
+  const drivers = await DriverInfo.find().populate("driver").lean();
   return drivers;
 };
 
@@ -139,12 +139,17 @@ export const updateUserInfo = async (
 };
 
 const deleteUser = async (userId: string) => {
-  const user = await User.findByIdAndDelete(userId);
+  const user = await User.findById(userId);
   if (!user) {
     throw new AppError("User not found", StatusCodes.NOT_FOUND);
   }
-};
 
+  if (user.role === "DRIVER" && user.driverInfo) {
+    await DriverInfo.findByIdAndDelete(user.driverInfo);
+  }
+
+  await User.findByIdAndDelete(userId);
+};
 const getAllUsersStats = async () => {
   const totalUsers = await User.countDocuments({});
   const totalRiders = await User.countDocuments({ role: Role.RIDER });

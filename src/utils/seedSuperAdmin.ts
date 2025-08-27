@@ -2,6 +2,7 @@ import bcryptjs from "bcryptjs";
 import { envVars } from "../config/env";
 import { IAuthProvider, IUser, Role } from "../modules/user/user.interface";
 import User from "../modules/user/user.model";
+import { DriverInfo } from "../modules/driver/driver.model";
 
 // Super Admin
 export const seedSuperAdmin = async () => {
@@ -87,7 +88,8 @@ export const seedDriver = async () => {
       providerId: envVars.DRIVER_EMAIL,
     };
 
-    const payload: IUser = {
+    // Create User
+    const user = await User.create<IUser>({
       name: "Driver",
       role: Role.DRIVER,
       email: envVars.DRIVER_EMAIL,
@@ -96,9 +98,26 @@ export const seedDriver = async () => {
       auths: [authProvider],
       agreeToTerms: true,
       agreeToMarketing: false,
-    };
+    });
 
-    await User.create(payload);
+    const driverInfo = await DriverInfo.create({
+      driver: user._id,
+      licenseNumber: "DL_45465465",
+      vehicleInfo: {
+        type: "car",
+        model: "Toyota Prius",
+        registrationNumber: "AZW45456456",
+      },
+      completedRides: 0,
+      earnings: 0,
+      rating: 0,
+      isAvailable: true,
+    });
+
+    // Update User with driverInfo reference
+    user.driverInfo = driverInfo._id;
+    await user.save();
+
     console.log("Driver seeded successfully");
   } catch (error) {
     console.log("Error seeding Driver:", error);
