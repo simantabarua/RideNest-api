@@ -12,12 +12,10 @@ import { connectRedis } from "./config/redis.config";
 
 const app = express();
 
-app.use(
-  cors({
-    origin: envVars.FRONTEND_URL,
-    credentials: true,
-  })
-);
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? ["https://ridenest-dev.web.app"]
+    : ["http://localhost:3000"];
 
 app.use(express.json());
 app.use(cookieParser());
@@ -38,9 +36,14 @@ connectRedis();
 app.use(passport.initialize());
 app.use(passport.session());
 configurePassport();
-
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.get("/", (req: Request, res: Response) => {
-  res.status(200).send("server is running");
+  res.status(200).send("server is running online");
 });
 
 app.use("/api/v1", router);
