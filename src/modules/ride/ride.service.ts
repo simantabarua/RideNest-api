@@ -256,13 +256,13 @@ const completeRide = async (rideId: string, driverId: string) => {
     ride: updatedRide._id,
     paymentStatus: PaymentStatus.PENDING,
     paymentMethod: PaymentMethod.CASH,
-    amount: updatedRide.fare || 0,
+    amount: updatedRide.totalFare || 0,
     currency: "BDT",
     initiatedAt: new Date(),
   });
 
   updatedRide.payment = payment._id as Types.ObjectId;
-  const fare = updatedRide.fare || 0;
+  const totalFare = updatedRide.totalFare || 0;
 
   await updatedRide.save();
 
@@ -271,7 +271,7 @@ const completeRide = async (rideId: string, driverId: string) => {
     {
       $inc: {
         completedRides: 1,
-        earnings: fare,
+        earnings: totalFare,
       },
       $set: { isAvailable: true },
     }
@@ -377,7 +377,6 @@ const getRiderRidesStats = async (riderId: string) => {
   ];
 };
 
-
 export const getDriverRidesStats = async (driverId: string) => {
   if (!Types.ObjectId.isValid(driverId)) {
     throw new Error("Invalid driver ID");
@@ -392,7 +391,7 @@ export const getDriverRidesStats = async (driverId: string) => {
           $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] },
         },
         totalEarnings: {
-          $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$fare", 0] },
+          $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$totalFare", 0] },
         },
       },
     },

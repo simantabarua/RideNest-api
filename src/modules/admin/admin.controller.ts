@@ -62,23 +62,53 @@ const deleteUser = catchAsync(async (req: Request, res: Response) => {
     data: null,
   });
 });
-
-const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
-  const stats = await AdminService.getDashboardStats();
+const getAllUsersStats = catchAsync(async (req: Request, res: Response) => {
+  const stats = await AdminService.getAllUsersStats();
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Dashboard stats retrieved",
+    message: "User stats retrieved",
     data: stats,
   });
 });
+const getAdminDashboardStats = catchAsync(
+  async (req: Request, res: Response) => {
+    const stats = await AdminService.getAdminDashboardStats();
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Dashboard stats retrieved",
+      data: stats,
+    });
+  }
+);
 
-const getDriverStats = catchAsync(async (req: Request, res: Response) => {
-  const stats = await AdminService.getDriverStats();
+const getAdminDriverStats = catchAsync(async (req: Request, res: Response) => {
+  const stats = await AdminService.getAdminDriverStats();
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "Driver stats retrieved",
+    data: stats,
+  });
+});
+const getAdminRiderStats = catchAsync(async (req: Request, res: Response) => {
+  const rideId = req.params.id;
+  const stats = await AdminService.getAdminRiderStats(rideId);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Rider stats retrieved",
+    data: stats,
+  });
+});
+
+const getAdminRidesStats = catchAsync(async (req: Request, res: Response) => {
+  const stats = await AdminService.getAdminRidesStats();
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Ride stats retrieved",
     data: stats,
   });
 });
@@ -89,6 +119,9 @@ export const AdminController = {
   getAllRides,
   updateUserRole,
   deleteUser,
-  getDashboardStats,
-  getDriverStats,
+  getAdminDashboardStats,
+  getAdminDriverStats,
+  getAdminRidesStats,
+  getAdminRiderStats,
+  getAllUsersStats,
 };

@@ -28,13 +28,13 @@ router.delete(
 router.get(
   "/dashboard",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-  AdminController.getDashboardStats
+  AdminController.getAdminDashboardStats
 );
 router.get(
   "/rides",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
   AdminController.getAllRides
-)
+);
 router.get(
   "/drivers",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
@@ -44,7 +44,18 @@ router.get(
 router.get(
   "/drivers-stats",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-  AdminController.getDriverStats
+  AdminController.getAdminDriverStats
+);
+router.get(
+  "/users-stats",
+  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  AdminController.getAllUsersStats
+);
+
+router.get(
+  "/rides-stats",
+  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  AdminController.getAdminRidesStats
 );
 
 export const AdminRoute = router;
