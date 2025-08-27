@@ -41,6 +41,7 @@ const userSchema = new Schema<IUser>(
     riderInfo: { type: Schema.Types.ObjectId, ref: "RiderInfo" },
     agreeToTerms: { type: Boolean, default: false },
     agreeToMarketing: { type: Boolean, default: false },
+    emergencyContacts: { type: [Schema.Types.Mixed], default: [] },
   },
   {
     timestamps: true,

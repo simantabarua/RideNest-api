@@ -66,6 +66,17 @@ export const updateUserZodSchema = z
     riderInfo: z.string().optional(),
     role: z.enum(["USER", "DRIVER", "ADMIN"]).optional(),
     licenseNumber: z.string().optional(),
+    emergencyContacts: z
+      .array(
+        z.object({
+          name: z.string(),
+          relation: z.string(),
+          phone: z.string().optional(),
+          email: z.string().optional(),
+          isPrimary: z.boolean().optional(),
+        })
+      )
+      .optional(),
     vehicleInfo: z
       .object({
         type: z.string(),

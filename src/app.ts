@@ -40,7 +40,7 @@ app.use(passport.session());
 configurePassport();
 
 app.get("/", (req: Request, res: Response) => {
-  res.status(200).send("Server is running");
+  res.status(200).send("server is running");
 });
 
 app.use("/api/v1", router);

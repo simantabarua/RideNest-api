@@ -158,10 +158,21 @@ const UpdateUser = async (
     }
   }
 
-  const allowedUserFields = ["name", "phone", "address", "picture"] as const;
+  const allowedUserFields = [
+    "name",
+    "phone",
+    "address",
+    "picture",
+    "emergencyContacts",
+  ] as const;
+
   allowedUserFields.forEach((field) => {
     if (payload[field] !== undefined) {
-      (user as Partial<IUser>)[field] = payload[field];
+      if (field === "emergencyContacts") {
+        (user as Partial<IUser>).emergencyContacts = payload.emergencyContacts;
+      } else {
+        (user as Partial<IUser>)[field] = payload[field];
+      }
     }
   });
 

@@ -16,6 +16,14 @@ export interface IAuthProvider {
   providerId: string;
 }
 
+export interface IEmergencyContact {
+  name: string;
+  phone: string;
+  email?: string;
+  relation: string;
+  isPrimary?: boolean;
+}
+
 export interface IUser {
   _id?: string;
   name: string;
@@ -39,4 +47,5 @@ export interface IUser {
   riderInfo?: string;
   agreeToTerms: boolean;
   agreeToMarketing: boolean;
+  emergencyContacts?: IEmergencyContact[];
 }

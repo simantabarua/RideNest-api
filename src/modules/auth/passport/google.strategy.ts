@@ -3,7 +3,7 @@ import {
   VerifyCallback,
 } from "passport-google-oauth20";
 import { envVars } from "../../../config/env";
-import { IUser, Role } from "../../user/user.interface";
+import { Role } from "../../user/user.interface";
 import User from "../../user/user.model";
 import { Profile } from "passport";
 
@@ -21,19 +21,30 @@ export const googleStrategy = new GoogleStrategy(
   ) => {
     try {
       const email = profile.emails?.[0]?.value;
+
       if (!email) {
-        return done(new Error("Email not found in Google profile"));
+        return done(undefined, false, {
+          message: "No email found in Google profile",
+        });
       }
 
       let user = await User.findOne({ email });
 
+      if (user && !user.isVerified) {
+        return done(undefined, false, { message: "User is not verified" });
+      }
+
+      if (user && user.isDeleted) {
+        return done(undefined, false, { message: "User is deleted" });
+      }
+
       if (!user) {
-        user = await User.create<IUser>({
-          name: profile.displayName,
+        user = await User.create({
           email,
-          isVerified: true,
-          role: Role.RIDER,
+          name: profile.displayName,
           picture: profile.photos?.[0]?.value,
+          role: Role.RIDER,
+          isVerified: true,
           auths: [
             {
               provider: "google",
@@ -44,9 +55,10 @@ export const googleStrategy = new GoogleStrategy(
         await user.save();
       }
 
-      done(null, user);
-    } catch (err) {
-      done(err as Error);
+      return done(undefined, user);
+    } catch (error) {
+      console.error("Google Strategy Error:", error);
+      return done(error as Error, false, { message: "Authentication failed" });
     }
   }
 );
