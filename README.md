@@ -63,7 +63,6 @@ npm run dev
 ```
 
 ---
-
 ## 📘 API Endpoints
 
 ### 🔐 Authentication
@@ -80,6 +79,15 @@ npm run dev
 
 ---
 
+### 📱 OTP (Phone/Email Verification)
+
+| Method | Endpoint              | Description                       |
+| ------ | --------------------- | --------------------------------- |
+| POST   | /api/v1/otp/send      | Send OTP to user’s email/phone    |
+| POST   | /api/v1/otp/verify    | Verify OTP for authentication     |
+
+---
+
 ### 👤 User Management
 
 | Method | Endpoint                | Description                          |
@@ -87,41 +95,62 @@ npm run dev
 | GET    | /api/v1/users/me        | Get current user's profile           |
 | PATCH  | /api/v1/users/update    | Update current user's profile        |
 | GET    | /api/v1/admin/users     | Get all users (Admin only)           |
-| PATCH  | /api/v1/admin/users/:id | Update a user's profile (Admin only) |
+| PATCH  | /api/v1/admin/users/:id | Update a user's role (Admin only)    |
 | DELETE | /api/v1/admin/users/:id | Delete a user (Admin only)           |
 
 ---
 
 ### 🚕 Driver Management
 
-| Method | Endpoint                     | Description                          |
-| ------ | ---------------------------- | ------------------------------------ |
-| GET    | /api/v1/drivers/earnings     | Get a driver's earnings              |
-| PATCH  | /api/v1/drivers/availability | Set a driver's online/offline status |
+| Method | Endpoint                         | Description                          |
+| ------ | -------------------------------- | ------------------------------------ |
+| GET    | /api/v1/drivers/availability     | Check driver availability status     |
+| PATCH  | /api/v1/drivers/availability     | Set driver availability              |
+| GET    | /api/v1/admin/drivers            | Get all drivers (Admin only)         |
+| GET    | /api/v1/admin/drivers-stats      | Get driver statistics (Admin only)   |
 
 ---
 
 ### 🛺 Ride Management
 
-| Method | Endpoint                   | Description                         |
-| ------ | -------------------------- | ----------------------------------- |
-| POST   | /api/v1/rides/request      | Request a new ride (Rider only)     |
-| GET    | /api/v1/rides/my           | Get all rides for current user      |
-| GET    | /api/v1/rides              | Get all rides (Admin only)          |
-| GET    | /api/v1/rides/:id          | Get ride details by ID (Admin only) |
-| PATCH  | /api/v1/rides/:id/accept   | Driver accepts a ride request       |
-| PATCH  | /api/v1/rides/:id/pickup   | Driver marks a ride as "picked up"  |
-| PATCH  | /api/v1/rides/:id/start    | Driver marks a ride as "in transit" |
-| PATCH  | /api/v1/rides/:id/complete | Driver completes a ride             |
-| PATCH  | /api/v1/rides/:id/cancel   | Rider or Admin cancels a ride       |
+| Method | Endpoint                        | Description                                |
+| ------ | ------------------------------- | ------------------------------------------ |
+| POST   | /api/v1/rides/request           | Request a new ride (Rider only)            |
+| GET    | /api/v1/rides/my                | Get all rides for current user             |
+| GET    | /api/v1/rides                   | Get all rides (Admin only)                 |
+| GET    | /api/v1/rides/:id               | Get ride details by ID                     |
+| GET    | /api/v1/rides/requested         | Get all requested rides (open rides)       |
+| GET    | /api/v1/rides/active/driver     | Get current active ride for a driver       |
+| GET    | /api/v1/rides/active/rider      | Get current active ride for a rider        |
+| GET    | /api/v1/rides/stats/rider       | Get ride statistics for current rider      |
+| GET    | /api/v1/rides/stats/driver      | Get ride statistics for current driver     |
+| PATCH  | /api/v1/rides/:id/accept        | Driver accepts a ride request              |
+| PATCH  | /api/v1/rides/:id/reject        | Driver rejects a ride request              |
+| PATCH  | /api/v1/rides/:id/pickup        | Driver marks ride as picked up             |
+| PATCH  | /api/v1/rides/:id/start         | Driver starts a ride                       |
+| PATCH  | /api/v1/rides/:id/complete      | Driver completes a ride                    |
+| PATCH  | /api/v1/rides/:id/cancel        | Rider cancels a ride                       |
+
+---
+
+### 💳 Payments
+
+| Method | Endpoint                 | Description                            |
+| ------ | ------------------------ | -------------------------------------- |
+| POST   | /api/v1/payments         | Create a new payment                   |
+| GET    | /api/v1/payments/:id     | Get payment details by ID              |
+| PATCH  | /api/v1/payments/:id     | Update payment status (Admin only)     |
 
 ---
 
 ### 🛠️ Admin
 
-| Method | Endpoint                | Description                            |
-| ------ | ----------------------- | -------------------------------------- |
-| GET    | /api/v1/admin/dashboard | Get admin dashboard stats (Admin only) |
+| Method | Endpoint                        | Description                                |
+| ------ | ------------------------------- | ------------------------------------------ |
+| GET    | /api/v1/admin/dashboard         | Get admin dashboard stats                  |
+| GET    | /api/v1/admin/users-stats       | Get user statistics (Admin only)           |
+| GET    | /api/v1/admin/rides-stats       | Get ride statistics (Admin only)           |
+| GET    | /api/v1/admin/drivers-stats     | Get driver statistics (Admin only)         |
 
 ---
 

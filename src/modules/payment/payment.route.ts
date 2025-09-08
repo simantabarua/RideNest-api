@@ -29,5 +29,4 @@ router.patch(
   validateRequest(updatePaymentStatusSchema),
   PaymentController.updatePaymentStatus
 );
-
 export const PaymentRoute = router;
