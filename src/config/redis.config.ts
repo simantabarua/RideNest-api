@@ -10,13 +10,15 @@ export const redisClient = createClient({
     }
 });
 
-redisClient.on('error', err => console.log('Redis Client Error', err));
-
-
+redisClient.on('error', err =>
+  // eslint-disable-next-line no-console
+  console.log('Redis Client Error', err)
+);
 
 export const connectRedis = async () => {
-    if (!redisClient.isOpen) {
-        await redisClient.connect();
-        console.log("Redis Connected");
-    }
-}
+  if (!redisClient.isOpen) {
+    await redisClient.connect();
+    // eslint-disable-next-line no-console
+    console.log('Redis Connected');
+  }
+};

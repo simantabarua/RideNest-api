@@ -32,8 +32,10 @@ export const seedSuperAdmin = async () => {
     };
 
     await User.create(payload);
+    // eslint-disable-next-line no-console
     console.log("Super Admin seeded successfully");
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log("Error seeding Super Admin:", error);
   }
 };
@@ -66,8 +68,10 @@ export const seedAdmin = async () => {
     };
 
     await User.create(payload);
+    // eslint-disable-next-line no-console
     console.log("Admin seeded successfully");
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log("Error seeding Admin:", error);
   }
 };
@@ -118,8 +122,10 @@ export const seedDriver = async () => {
     user.driverInfo = driverInfo._id;
     await user.save();
 
+    // eslint-disable-next-line no-console
     console.log("Driver seeded successfully");
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log("Error seeding Driver:", error);
   }
 };
@@ -152,8 +158,10 @@ export const seedRider = async () => {
     };
 
     await User.create(payload);
+    // eslint-disable-next-line no-console
     console.log("Rider seeded successfully");
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log("Error seeding Rider:", error);
   }
 };

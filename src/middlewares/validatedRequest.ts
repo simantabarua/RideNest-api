@@ -4,6 +4,7 @@ import { ZodObject } from "zod";
 const validateRequest =
   (zodSchema: ZodObject) =>
   async (req: Request, res: Response, next: NextFunction) => {
+    // eslint-disable-next-line no-console
     console.log("Request Body:", req.body);
     try {
       await zodSchema.parseAsync(req.body);
@@ -14,6 +15,7 @@ const validateRequest =
         message: "Validation failed",
         error: err,
       });
+      // eslint-disable-next-line no-console
       console.log(err)
     }
   };

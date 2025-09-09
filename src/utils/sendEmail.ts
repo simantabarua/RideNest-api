@@ -48,9 +48,11 @@ export const sendEmail = async ({
         contentType: attachment.contentType,
       })),
     });
+    // eslint-disable-next-line no-console
     console.log(` Email sent to ${to}: ${info.messageId}`);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
+    // eslint-disable-next-line no-console
     console.log("email sending error", error);
     throw new AppError("Email error", 401, "AUTH_EMAIL_ERROR");
   }

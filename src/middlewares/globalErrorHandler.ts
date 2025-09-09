@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import AppError from "../errorHelper/AppError";
 import { envVars } from "../config/env";
@@ -12,9 +10,10 @@ import {
 } from "../errorHelper/ErrorHelper";
 
 export const globalErrorHandler = (
-  err: any,
+  err: unknown,
   req: Request,
   res: Response,
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   next: NextFunction
 ) => {
   let customCode = "UNKNOWN_ERROR";
@@ -23,7 +22,7 @@ export const globalErrorHandler = (
 
   if (envVars.NODE_ENV === "development") {
     // eslint-disable-next-line no-console
-    console.error(err);
+    console.log(err);
   }
 
   // MongoDB duplicate key error

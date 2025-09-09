@@ -24,6 +24,7 @@ interface EnvConfig {
   GOOGLE_CALLBACK_URL: string;
   EXPRESS_SESSION_SECRET: string;
   FRONTEND_URL: string;
+  ALLOWED_ORIGINS: string;
   EMAIL_SENDER: {
     SMTP_USER: string;
     SMTP_PASS: string;
@@ -60,6 +61,7 @@ const loadEnvVariables = (): EnvConfig => {
     "GOOGLE_CALLBACK_URL",
     "EXPRESS_SESSION_SECRET",
     "FRONTEND_URL",
+    "ALLOWED_ORIGINS",
     "REDIS_HOST",
     "REDIS_PORT",
     "REDIS_USERNAME",
@@ -99,6 +101,7 @@ const loadEnvVariables = (): EnvConfig => {
     GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL as string,
     EXPRESS_SESSION_SECRET: process.env.EXPRESS_SESSION_SECRET as string,
     FRONTEND_URL: process.env.FRONTEND_URL as string,
+    ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS as string,
     EMAIL_SENDER: {
       SMTP_USER: process.env.SMTP_USER as string,
       SMTP_PASS: process.env.SMTP_PASS as string,

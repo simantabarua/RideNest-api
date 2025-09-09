@@ -57,6 +57,7 @@ export const googleStrategy = new GoogleStrategy(
 
       return done(undefined, user);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Google Strategy Error:", error);
       return done(error as Error, false, { message: "Authentication failed" });
     }
