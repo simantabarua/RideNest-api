@@ -90,7 +90,21 @@ const generateNewAccessToken = catchAsync(
 
 const logout = catchAsync(
   async (req: any, res: any, next: any) => {
+    // 1. Clear cookies
     clearAuthCookies(res);
+
+    // 2. Clear passport session if it exists
+    if (req.logout) {
+      req.logout((err: any) => {
+        if (err) return next(err);
+      });
+    }
+
+    // 3. Clear express session if it exists
+    if (req.session) {
+      req.session.destroy();
+    }
+
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
