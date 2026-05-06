@@ -39,81 +39,49 @@ interface EnvConfig {
 }
 
 const loadEnvVariables = (): EnvConfig => {
-  const requiredEnvVars: (keyof EnvConfig | string)[] = [
-    "PORT",
-    "DB_URL",
-    "NODE_ENV",
-    "BCRYPT_SALT_ROUND",
-    "JWT_ACCESS_SECRET",
-    "JWT_ACCESS_EXPIRES",
-    "JWT_REFRESH_SECRET",
-    "JWT_REFRESH_EXPIRES",
-    "SUPER_ADMIN_EMAIL",
-    "SUPER_ADMIN_PASSWORD",
-    "ADMIN_EMAIL",
-    "ADMIN_PASSWORD",
-    "DRIVER_EMAIL",
-    "DRIVER_PASSWORD",
-    "RIDER_EMAIL",
-    "RIDER_PASSWORD",
-    "GOOGLE_CLIENT_SECRET",
-    "GOOGLE_CLIENT_ID",
-    "GOOGLE_CALLBACK_URL",
-    "EXPRESS_SESSION_SECRET",
-    "FRONTEND_URL",
-    "ALLOWED_ORIGINS",
-    "REDIS_HOST",
-    "REDIS_PORT",
-    "REDIS_USERNAME",
-    "REDIS_PASSWORD",
-    "SMTP_USER",
-    "SMTP_PASS",
-    "SMTP_PORT",
-    "SMTP_HOST",
-    "SMTP_FROM",
-  ];
-
-  for (const key of requiredEnvVars) {
-    if (!process.env[key]) {
+  const getEnv = (key: string, defaultValue = ""): string => {
+    const value = process.env[key];
+    if (!value && !defaultValue && process.env.NODE_ENV === "production") {
       // eslint-disable-next-line no-console
       console.error(`❌ Warning: Missing required environment variable: ${key}`);
     }
-  }
+    return value || defaultValue;
+  };
 
   return {
-    PORT: process.env.PORT as string,
-    DB_URL: process.env.DB_URL as string,
-    NODE_ENV: process.env.NODE_ENV as "development" | "production",
-    BCRYPT_SALT_ROUND: process.env.BCRYPT_SALT_ROUND as string,
-    JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET as string,
-    JWT_ACCESS_EXPIRES: process.env.JWT_ACCESS_EXPIRES as string,
-    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET as string,
-    JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES as string,
-    SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
-    SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
-    ADMIN_EMAIL: process.env.ADMIN_EMAIL as string,
-    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD as string,
-    DRIVER_EMAIL: process.env.DRIVER_EMAIL as string,
-    DRIVER_PASSWORD: process.env.DRIVER_PASSWORD as string,
-    RIDER_EMAIL: process.env.RIDER_EMAIL as string,
-    RIDER_PASSWORD: process.env.RIDER_PASSWORD as string,
-    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID as string,
-    GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL as string,
-    EXPRESS_SESSION_SECRET: process.env.EXPRESS_SESSION_SECRET as string,
-    FRONTEND_URL: process.env.FRONTEND_URL as string,
-    ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS as string,
+    PORT: getEnv("PORT", "5000"),
+    DB_URL: getEnv("DB_URL"),
+    NODE_ENV: (getEnv("NODE_ENV", "development") as "development" | "production"),
+    BCRYPT_SALT_ROUND: getEnv("BCRYPT_SALT_ROUND", "12"),
+    JWT_ACCESS_SECRET: getEnv("JWT_ACCESS_SECRET", "secret"),
+    JWT_ACCESS_EXPIRES: getEnv("JWT_ACCESS_EXPIRES", "1d"),
+    JWT_REFRESH_SECRET: getEnv("JWT_REFRESH_SECRET", "refresh_secret"),
+    JWT_REFRESH_EXPIRES: getEnv("JWT_REFRESH_EXPIRES", "30d"),
+    SUPER_ADMIN_EMAIL: getEnv("SUPER_ADMIN_EMAIL"),
+    SUPER_ADMIN_PASSWORD: getEnv("SUPER_ADMIN_PASSWORD"),
+    ADMIN_EMAIL: getEnv("ADMIN_EMAIL"),
+    ADMIN_PASSWORD: getEnv("ADMIN_PASSWORD"),
+    DRIVER_EMAIL: getEnv("DRIVER_EMAIL"),
+    DRIVER_PASSWORD: getEnv("DRIVER_PASSWORD"),
+    RIDER_EMAIL: getEnv("RIDER_EMAIL"),
+    RIDER_PASSWORD: getEnv("RIDER_PASSWORD"),
+    GOOGLE_CLIENT_SECRET: getEnv("GOOGLE_CLIENT_SECRET"),
+    GOOGLE_CLIENT_ID: getEnv("GOOGLE_CLIENT_ID"),
+    GOOGLE_CALLBACK_URL: getEnv("GOOGLE_CALLBACK_URL"),
+    EXPRESS_SESSION_SECRET: getEnv("EXPRESS_SESSION_SECRET", "session_secret"),
+    FRONTEND_URL: getEnv("FRONTEND_URL", "http://localhost:3000"),
+    ALLOWED_ORIGINS: getEnv("ALLOWED_ORIGINS", "http://localhost:3000"),
     EMAIL_SENDER: {
-      SMTP_USER: process.env.SMTP_USER as string,
-      SMTP_PASS: process.env.SMTP_PASS as string,
-      SMTP_PORT: process.env.SMTP_PORT as string,
-      SMTP_HOST: process.env.SMTP_HOST as string,
-      SMTP_FROM: process.env.SMTP_FROM as string,
+      SMTP_USER: getEnv("SMTP_USER"),
+      SMTP_PASS: getEnv("SMTP_PASS"),
+      SMTP_PORT: getEnv("SMTP_PORT", "587"),
+      SMTP_HOST: getEnv("SMTP_HOST"),
+      SMTP_FROM: getEnv("SMTP_FROM"),
     },
-    REDIS_HOST: process.env.REDIS_HOST as string,
-    REDIS_PORT: process.env.REDIS_PORT as string,
-    REDIS_USERNAME: process.env.REDIS_USERNAME as string,
-    REDIS_PASSWORD: process.env.REDIS_PASSWORD as string,
+    REDIS_HOST: getEnv("REDIS_HOST", "localhost"),
+    REDIS_PORT: getEnv("REDIS_PORT", "6379"),
+    REDIS_USERNAME: getEnv("REDIS_USERNAME", "default"),
+    REDIS_PASSWORD: getEnv("REDIS_PASSWORD", ""),
   };
 };
 
