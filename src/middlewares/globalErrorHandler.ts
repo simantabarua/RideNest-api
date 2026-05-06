@@ -1,23 +1,18 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { StatusCodes } from "http-status-codes";
 import { ZodError } from "zod";
-import handleZodError from "../errorHelper/handleZodError";
-import handleValidationError from "../errorHelper/handleValidationError";
-import handleCastError from "../errorHelper/handleCastError";
-import handleDuplicateError from "../errorHelper/handleDuplicateError";
+import {
+  handlerZodError,
+  handlerValidationError,
+  handlerCastError,
+  handlerDuplicateError,
+} from "../errorHelper/ErrorHelper";
 import AppError from "../errorHelper/AppError";
 
 interface TErrorSources {
   path: string | number;
   message: string;
-}
-
-interface TGenericErrorResponse {
-  statusCode: number;
-  message: string;
-  errorSources: TErrorSources[];
 }
 
 export const globalErrorHandler = (
@@ -37,25 +32,35 @@ export const globalErrorHandler = (
   ];
 
   if (err instanceof ZodError) {
-    const simplifiedError = handleZodError(err);
+    const simplifiedError = handlerZodError(err);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
-    errorSources = simplifiedError?.errorSources;
+    errorSources = simplifiedError?.errorSources || [];
   } else if (err?.name === "ValidationError") {
-    const simplifiedError = handleValidationError(err);
+    const simplifiedError = handlerValidationError(err);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
-    errorSources = simplifiedError?.errorSources;
+    errorSources = simplifiedError?.errorSources || [];
   } else if (err?.name === "CastError") {
-    const simplifiedError = handleCastError(err);
+    const simplifiedError = handlerCastError(err);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
-    errorSources = simplifiedError?.errorSources;
+    errorSources = [
+      {
+        path: err.path,
+        message: err.message,
+      },
+    ];
   } else if (err?.code === 11000) {
-    const simplifiedError = handleDuplicateError(err);
+    const simplifiedError = handlerDuplicateError(err);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
-    errorSources = simplifiedError?.errorSources;
+    errorSources = [
+      {
+        path: "",
+        message: simplifiedError?.message,
+      },
+    ];
   } else if (err instanceof AppError) {
     statusCode = err?.statusCode;
     message = err.message;
