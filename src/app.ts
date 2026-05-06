@@ -71,7 +71,7 @@ connectRedis();
 app.use(passport.initialize());
 app.use(passport.session());
 configurePassport();
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (req: any, res: any) => {
   res.status(200).send("server is running online");
 });
 
