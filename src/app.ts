@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import expressSession from "express-session";
 import cookieParser from "cookie-parser";
@@ -21,7 +21,7 @@ const allowedOrigins = [
 
 // Manual CORS middleware (more reliable on Vercel than the cors package).
 // Handles the preflight OPTIONS request and sets headers on every response.
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin;
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);

@@ -9,7 +9,7 @@ export const setAvailability = async (
 ) => {
   const updated = await DriverInfo.findOneAndUpdate(
     {
-      $or: [{ driver: driverId }, { driver: new Types.ObjectId(driverId) }],
+      $or: [{ driver: driverId }, { driver: new (Types.ObjectId as any)(driverId) }],
     },
     { $set: { isAvailable } },
     { new: true }
@@ -24,7 +24,7 @@ export const setAvailability = async (
 
 export const isAvailable = async (driverId: string) => {
   const driver = await DriverInfo.findOne({
-    driver: new Types.ObjectId(driverId),
+    driver: new (Types.ObjectId as any)(driverId),
   });
 
   if (!driver) {

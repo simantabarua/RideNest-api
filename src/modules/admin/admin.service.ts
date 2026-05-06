@@ -238,18 +238,18 @@ const getAdminRidesStats = async () => {
 
 const getAdminRiderStats = async (riderId: string) => {
   const totalRides = await Ride.countDocuments({
-    rider: new Types.ObjectId(riderId),
+    rider: new (Types.ObjectId as any)(riderId),
   });
   const completedRides = await Ride.countDocuments({
-    rider: new Types.ObjectId(riderId),
+    rider: new (Types.ObjectId as any)(riderId),
     status: RideStatus.COMPLETED,
   });
   const cancelledRides = await Ride.countDocuments({
-    rider: new Types.ObjectId(riderId),
+    rider: new (Types.ObjectId as any)(riderId),
     status: RideStatus.CANCELLED,
   });
   const ongoingRides = await Ride.countDocuments({
-    rider: new Types.ObjectId(riderId),
+    rider: new (Types.ObjectId as any)(riderId),
     status: {
       $in: [RideStatus.ACCEPTED, RideStatus.PICKED_UP, RideStatus.IN_TRANSIT],
     },
@@ -258,7 +258,7 @@ const getAdminRiderStats = async (riderId: string) => {
   const totalSpentAgg = await Ride.aggregate([
     {
       $match: {
-        rider: new Types.ObjectId(riderId),
+        rider: new (Types.ObjectId as any)(riderId),
         status: RideStatus.COMPLETED,
       },
     },

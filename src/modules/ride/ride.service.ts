@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { IRideRequest, IRide, RideStatus } from "./ride.interface";
 import { Ride } from "./ride.model";
 import User from "../user/user.model";
@@ -195,7 +195,7 @@ const acceptRide = async (rideId: string, driverId: string) => {
   await ensureDriverHasNoActiveRide(driverId);
 
   ride.status = RideStatus.ACCEPTED;
-  ride.driver = new Types.ObjectId(driverId);
+  ride.driver = new (Types.ObjectId as any)(driverId);
   ride.timestamps.acceptedAt = new Date();
   await ride.save();
 
@@ -223,7 +223,7 @@ const rejectRide = async (rideId: string, driverId: string) => {
     throw new AppError("Ride already handled", StatusCodes.BAD_REQUEST);
 
   ride.status = RideStatus.REJECTED;
-  ride.driver = new Types.ObjectId(driverId);
+  ride.driver = new (Types.ObjectId as any)(driverId);
   ride.timestamps.rejectedAt = new Date();
   await ride.save();
 
@@ -339,12 +339,12 @@ const progressRideStatus = async (
 };
 
 const getRiderRidesStats = async (riderId: string) => {
-  if (!Types.ObjectId.isValid(riderId)) {
+  if (!mongoose.isValidObjectId(riderId)) {
     throw new Error("Invalid rider ID");
   }
 
   const stats = await Ride.aggregate([
-    { $match: { rider: new Types.ObjectId(riderId) } },
+    { $match: { rider: new (Types.ObjectId as any)(riderId) } },
     {
       $group: {
         _id: "$rider",
@@ -378,11 +378,11 @@ const getRiderRidesStats = async (riderId: string) => {
 };
 
 export const getDriverRidesStats = async (driverId: string) => {
-  if (!Types.ObjectId.isValid(driverId)) {
+  if (!mongoose.isValidObjectId(driverId)) {
     throw new Error("Invalid driver ID");
   }
   const stats = await Ride.aggregate([
-    { $match: { driver: new Types.ObjectId(driverId) } },
+    { $match: { driver: new (Types.ObjectId as any)(driverId) } },
     {
       $group: {
         _id: "$driver",
@@ -397,7 +397,7 @@ export const getDriverRidesStats = async (driverId: string) => {
     },
   ]);
   const ratings = await DriverInfo.aggregate([
-    { $match: { driver: new Types.ObjectId(driverId) } },
+    { $match: { driver: new (Types.ObjectId as any)(driverId) } },
     {
       $group: {
         _id: "$driver",
