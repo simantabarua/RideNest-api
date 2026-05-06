@@ -35,7 +35,7 @@ const userSchema = new Schema<IUser>(
     isApproved: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
     isSuspend: { type: Boolean, default: false },
-    auths: { type: [AuthProviderSchema], default: [] },
+    auths: [AuthProviderSchema],
 
     driverInfo: { type: Schema.Types.ObjectId, ref: "DriverInfo" },
     riderInfo: { type: Schema.Types.ObjectId, ref: "RiderInfo" },

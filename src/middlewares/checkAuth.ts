@@ -1,12 +1,12 @@
-import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
 import AppError from "../errorHelper/AppError";
 import { verifyToken } from "../utils/jwt";
 import User from "../modules/user/user.model";
+
 export const checkAuth =
   (...authRoles: string[]) =>
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: any, res: any, next: any) => {
     const accessToken = req.cookies?.accessToken || req.headers?.authorization;
     try {
       if (!accessToken) {

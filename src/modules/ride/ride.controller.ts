@@ -1,13 +1,12 @@
-import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
+import sendResponse from "../../utils/sendResponse";
 import { RideService } from "./ride.service";
 import { JwtPayload } from "jsonwebtoken";
 import { Role } from "../user/user.interface";
 
-const withUser = (req: Request) => (req.user as JwtPayload).id;
+const withUser = (req: any) => (req.user as JwtPayload).id;
 
-const requestRide = catchAsync(async (req: Request, res: Response) => {
+const requestRide = catchAsync(async (req: any, res: any) => {
   const ride = await RideService.createRide(req.body, withUser(req));
   sendResponse(res, {
     statusCode: 201,
@@ -17,7 +16,7 @@ const requestRide = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getMyRides = catchAsync(async (req: Request, res: Response) => {
+const getMyRides = catchAsync(async (req: any, res: any) => {
   const rides = await RideService.getRidesByUser(withUser(req));
   sendResponse(res, {
     statusCode: 200,
@@ -27,7 +26,7 @@ const getMyRides = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getAllRides = catchAsync(async (req: Request, res: Response) => {
+const getAllRides = catchAsync(async (req: any, res: any) => {
   const rides = await RideService.getAllRides();
   sendResponse(res, {
     statusCode: 200,
@@ -37,7 +36,7 @@ const getAllRides = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const getAllRequestedRides = catchAsync(
-  async (_req: Request, res: Response) => {
+  async (_req: any, res: any) => {
     const rides = await RideService.getAllRequestedRides();
     sendResponse(res, {
       statusCode: 200,
@@ -48,7 +47,7 @@ const getAllRequestedRides = catchAsync(
   }
 );
 const getActiveRideByDriver = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: any, res: any) => {
     const rides = await RideService.getActiveRideByDriver(withUser(req));
     sendResponse(res, {
       statusCode: 200,
@@ -58,7 +57,7 @@ const getActiveRideByDriver = catchAsync(
     });
   }
 );
-const getActiveRideByRider = catchAsync(async (req: Request, res: Response) => {
+const getActiveRideByRider = catchAsync(async (req: any, res: any) => {
   const rides = await RideService.getActiveRideByRider(withUser(req));
   sendResponse(res, {
     statusCode: 200,
@@ -68,7 +67,7 @@ const getActiveRideByRider = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getRideById = catchAsync(async (req: Request, res: Response) => {
+const getRideById = catchAsync(async (req: any, res: any) => {
   const ride = await RideService.getRideById(req.params.id);
   sendResponse(res, {
     statusCode: 200,
@@ -82,7 +81,7 @@ const transition = (
   fn: (rideId: string, userId: string) => Promise<unknown>,
   msg: string
 ) =>
-  catchAsync(async (req: Request, res: Response) => {
+  catchAsync(async (req: any, res: any) => {
     const ride = await fn(req.params.id, withUser(req));
     sendResponse(res, {
       statusCode: 200,
@@ -92,7 +91,7 @@ const transition = (
     });
   });
 
-const cancelRide = async (req: Request, res: Response, next: NextFunction) => {
+const cancelRide = async (req: any, res: any, next: any) => {
   try {
     const rideId = req.params.id;
     const decodedToken = req.user as JwtPayload;
@@ -116,7 +115,7 @@ const cancelRide = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const getRiderRidesStats = catchAsync(async (req: Request, res: Response) => {
+const getRiderRidesStats = catchAsync(async (req: any, res: any) => {
   const stats = await RideService.getRiderRidesStats(withUser(req));
   sendResponse(res, {
     statusCode: 200,
@@ -125,7 +124,7 @@ const getRiderRidesStats = catchAsync(async (req: Request, res: Response) => {
     data: stats,
   });
 });
-const getDriverRidesStats = catchAsync(async (req: Request, res: Response) => {
+const getDriverRidesStats = catchAsync(async (req: any, res: any) => {
   const stats = await RideService.getDriverRidesStats(withUser(req));
   sendResponse(res, {
     statusCode: 200,

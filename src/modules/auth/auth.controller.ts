@@ -1,17 +1,16 @@
 import passport from "passport";
 import { catchAsync } from "../../utils/catchAsync";
-import { Request, Response, NextFunction } from "express";
 import AppError from "../../errorHelper/AppError";
 import { StatusCodes } from "http-status-codes";
 import { createUserToken } from "../../utils/userToken";
-import { sendResponse } from "../../utils/sendResponse";
+import sendResponse from "../../utils/sendResponse";
 import { envVars } from "../../config/env";
 import { AuthServices } from "./auth.service";
 import { JwtPayload } from "jsonwebtoken";
 import { clearAuthCookies, setAuthCookies } from "../../utils/manageCookie";
 
 const credentialLogin = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: any, res: any, next: any) => {
     passport.authenticate(
       "local",
       { session: false },
@@ -48,7 +47,7 @@ const credentialLogin = catchAsync(
         const userToken = createUserToken(user);
         const userObj = user.toObject();
         delete userObj.password;
-        setAuthCookies(res, userToken);
+        setAuthCookies(res, userToken.accessToken, userToken.refreshToken);
 
         sendResponse(res, {
           statusCode: StatusCodes.OK,
@@ -66,8 +65,7 @@ const credentialLogin = catchAsync(
 );
 
 const generateNewAccessToken = catchAsync(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: any, res: any, next: any) => {
     const refreshToken = req.cookies?.refreshToken;
 
     if (!refreshToken || typeof refreshToken !== "string") {
@@ -76,7 +74,7 @@ const generateNewAccessToken = catchAsync(
 
     const tokenInfo = await AuthServices.getNewAccessToken(refreshToken);
 
-    setAuthCookies(res, tokenInfo);
+    setAuthCookies(res, tokenInfo.accessToken, refreshToken);
 
     sendResponse(res, {
       statusCode: StatusCodes.OK,
@@ -90,8 +88,7 @@ const generateNewAccessToken = catchAsync(
 );
 
 const logout = catchAsync(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: any, res: any, next: any) => {
     clearAuthCookies(res);
     sendResponse(res, {
       statusCode: StatusCodes.OK,
@@ -102,8 +99,7 @@ const logout = catchAsync(
   }
 );
 const changePassword = catchAsync(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: any, res: any, next: any) => {
     const decodedToken = req.user;
     const changePasswordInfo = await AuthServices.changePassword(
       req.body,
@@ -120,8 +116,7 @@ const changePassword = catchAsync(
 );
 
 const googleAuthController = catchAsync(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: any, res: any, next: any) => {
     const user = req.user;
     let redirectTo = req.query.state ? (req.query.state as string) : "";
 
@@ -133,7 +128,7 @@ const googleAuthController = catchAsync(
       return;
     }
     const tokenInfo = createUserToken(user);
-    setAuthCookies(res, tokenInfo);
+    setAuthCookies(res, tokenInfo.accessToken, tokenInfo.refreshToken);
     res.redirect(`${envVars.FRONTEND_URL}/${redirectTo}`);
   }
 );

@@ -5,8 +5,8 @@ import { localStrategy } from "./local.strategy";
 import { googleStrategy } from "./google.strategy";
 
 export const configurePassport = () => {
-  passport.use("local", localStrategy);
-  passport.use("google", googleStrategy);
+  passport.use("local", localStrategy as any);
+  passport.use("google", googleStrategy as any);
 };
 
 passport.serializeUser((user: any, done: (err: any, id?: string) => void) => {

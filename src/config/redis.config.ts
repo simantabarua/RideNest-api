@@ -10,7 +10,7 @@ export const redisClient = createClient({
     }
 });
 
-redisClient.on('error', err =>
+redisClient.on('error', (err: any) =>
   // eslint-disable-next-line no-console
   console.log('Redis Client Error', err)
 );

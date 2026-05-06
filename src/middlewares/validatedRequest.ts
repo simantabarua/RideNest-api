@@ -1,9 +1,8 @@
-import { NextFunction, Request, Response } from "express";
 import { ZodObject } from "zod";
 
 const validateRequest =
-  (zodSchema: ZodObject) =>
-  async (req: Request, res: Response, next: NextFunction) => {
+  (zodSchema: ZodObject<any>) =>
+  async (req: any, res: any, next: any) => {
     // eslint-disable-next-line no-console
     console.log("Request Body:", req.body);
     try {

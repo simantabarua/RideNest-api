@@ -21,7 +21,7 @@ const allowedOrigins = [
 
 // Manual CORS middleware (more reliable on Vercel than the cors package).
 // Handles the preflight OPTIONS request and sets headers on every response.
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req: any, res: any, next: any) => {
   const origin = req.headers.origin;
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);

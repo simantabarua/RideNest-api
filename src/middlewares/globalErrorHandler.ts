@@ -1,84 +1,86 @@
-import { NextFunction, Request, Response } from "express";
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { StatusCodes } from "http-status-codes";
+import { ZodError } from "zod";
+import handleZodError from "../errorHelper/handleZodError";
+import handleValidationError from "../errorHelper/handleValidationError";
+import handleCastError from "../errorHelper/handleCastError";
+import handleDuplicateError from "../errorHelper/handleDuplicateError";
 import AppError from "../errorHelper/AppError";
-import { envVars } from "../config/env";
-import { TErrorSources } from "../interface/error.types";
-import {
-  handlerCastError,
-  handlerDuplicateError,
-  handlerValidationError,
-  handlerZodError,
-} from "../errorHelper/ErrorHelper";
+
+interface TErrorSources {
+  path: string | number;
+  message: string;
+}
+
+interface TGenericErrorResponse {
+  statusCode: number;
+  message: string;
+  errorSources: TErrorSources[];
+}
 
 export const globalErrorHandler = (
-  err: unknown,
-  req: Request,
-  res: Response,
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  next: NextFunction
+  err: any,
+  req: any,
+  res: any,
+  next: any
 ) => {
-  let customCode = "UNKNOWN_ERROR";
-  let message = "An unexpected error occurred";
-  let errorSources: TErrorSources[] = [];
+  // setting default values
+  let statusCode = 500;
+  let message = "Something went wrong!";
+  let errorSources: TErrorSources[] = [
+    {
+      path: "",
+      message: "Something went wrong",
+    },
+  ];
 
-  if (envVars.NODE_ENV === "development") {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
-
-  // Narrow unknown to a record-like shape for safe property access
-  const e = err as {
-    code?: number;
-    name?: string;
-    statusCode?: number;
-    stack?: string;
-  };
-
-  // MongoDB duplicate key error
-  if (e.code === 11000) {
-    const simplifiedError = handlerDuplicateError(err);
-    customCode = "DB_DUPLICATE_KEY";
-    message = simplifiedError.message;
-  }
-  // Mongoose CastError
-  else if (e.name === "CastError") {
-    const simplifiedError = handlerCastError(err as Parameters<typeof handlerCastError>[0]);
-    customCode = "DB_CAST_ERROR";
-    message = simplifiedError.message;
-  }
-  // Zod schema validation error
-  else if (e.name === "ZodError") {
-    const simplifiedError = handlerZodError(err as Parameters<typeof handlerZodError>[0]);
-    customCode = "VALIDATION_ERROR";
-    message = simplifiedError.message;
-    errorSources = simplifiedError.errorSources ?? [];
-  }
-  // Mongoose validation error
-  else if (e.name === "ValidationError") {
-    const simplifiedError = handlerValidationError(err as Parameters<typeof handlerValidationError>[0]);
-    customCode = "DB_VALIDATION_ERROR";
-    message = simplifiedError.message;
-    errorSources = simplifiedError.errorSources ?? [];
-  }
-  // Custom application error
-  else if (err instanceof AppError) {
-    customCode = err.code ?? "APP_ERROR";
+  if (err instanceof ZodError) {
+    const simplifiedError = handleZodError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.name === "ValidationError") {
+    const simplifiedError = handleValidationError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.name === "CastError") {
+    const simplifiedError = handleCastError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.code === 11000) {
+    const simplifiedError = handleDuplicateError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err instanceof AppError) {
+    statusCode = err?.statusCode;
     message = err.message;
-  }
-  // General JS Error
-  else if (err instanceof Error) {
-    customCode = "GENERAL_ERROR";
+    errorSources = [
+      {
+        path: "",
+        message: err?.message,
+      },
+    ];
+  } else if (err instanceof Error) {
     message = err.message;
+    errorSources = [
+      {
+        path: "",
+        message: err?.message,
+      },
+    ];
   }
 
-  // Use proper HTTP status code
-  const responseStatus = e.statusCode || 500;
-
-  res.status(responseStatus).json({
+  // ultimate return
+  return res.status(statusCode).json({
     success: false,
-    code: customCode,
     message,
     errorSources,
-    err: envVars.NODE_ENV === "development" ? err : undefined,
-    stack: envVars.NODE_ENV === "development" ? e.stack : undefined,
+    err,
+    stack: process.env.NODE_ENV === "development" ? err?.stack : null,
   });
 };

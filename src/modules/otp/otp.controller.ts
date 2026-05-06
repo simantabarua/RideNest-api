@@ -1,10 +1,8 @@
-import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
+import sendResponse from "../../utils/sendResponse";
 import { OTPService } from "./otp.service";
 
-
-const sendOTP = catchAsync(async (req: Request, res: Response) => {
+const sendOTP = catchAsync(async (req: any, res: any) => {
     const { email, name } = req.body
     await OTPService.sendOTP(email, name)
     sendResponse(res, {
@@ -15,7 +13,7 @@ const sendOTP = catchAsync(async (req: Request, res: Response) => {
     });
 })
 
-const verifyOTP = catchAsync(async (req: Request, res: Response) => {
+const verifyOTP = catchAsync(async (req: any, res: any) => {
     const { email, otp } = req.body;
     await OTPService.verifyOTP(email, otp)
     sendResponse(res, {

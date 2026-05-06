@@ -1,10 +1,9 @@
-import { Request, Response } from "express";
 import { DriverService } from "./driver.service";
 import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
+import sendResponse from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
 
-const setAvailability = catchAsync(async (req: Request, res: Response) => {
+const setAvailability = catchAsync(async (req: any, res: any) => {
   const { id: userId } = req.user as JwtPayload;
   const { isAvailable } = req.body;
   if (typeof isAvailable !== "boolean") {
@@ -27,7 +26,7 @@ const setAvailability = catchAsync(async (req: Request, res: Response) => {
     data: updatedDriver,
   });
 });
-const isAvailable = catchAsync(async (req: Request, res: Response) => {
+const isAvailable = catchAsync(async (req: any, res: any) => {
   const { id: userId } = req.user as JwtPayload;
   const isAvailable = await DriverService.isAvailable(userId);
   sendResponse(res, {

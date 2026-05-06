@@ -1,37 +1,25 @@
-import { Response } from "express";
+import { CookieOptions } from "express";
 
-export interface TokenInfo {
-  accessToken?: string;
-  refreshToken?: string;
-}
-
-const baseCookieOptions = {
+const baseCookieOptions: CookieOptions = {
   httpOnly: true,
-  secure: true,
-  sameSite: "none" as const,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "none",
+  path: "/",
 };
 
-const accessTokenOptions = {
-  ...baseCookieOptions,
-  maxAge: 1000 * 60 * 60 * 24 * 7,
+export const setAuthCookies = (
+  res: any,
+  accessToken: string,
+  refreshToken: string
+): void => {
+  res.cookie("accessToken", accessToken, baseCookieOptions);
+  res.cookie("refreshToken", refreshToken, {
+    ...baseCookieOptions,
+    maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
+  });
 };
 
-const refreshTokenOptions = {
-  ...baseCookieOptions,
-  maxAge: 1000 * 60 * 60 * 24 * 7,
-};
-
-export const setAuthCookies = (res: Response, tokens: TokenInfo): void => {
-  if (tokens.accessToken) {
-    res.cookie("accessToken", tokens.accessToken, accessTokenOptions);
-  }
-
-  if (tokens.refreshToken) {
-    res.cookie("refreshToken", tokens.refreshToken, refreshTokenOptions);
-  }
-};
-
-export const clearAuthCookies = (res: Response): void => {
-  (res as any).clearCookie("accessToken", baseCookieOptions);
-  (res as any).clearCookie("refreshToken", baseCookieOptions);
+export const clearAuthCookies = (res: any): void => {
+  res.clearCookie("accessToken", baseCookieOptions);
+  res.clearCookie("refreshToken", baseCookieOptions);
 };

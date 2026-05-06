@@ -1,11 +1,10 @@
-import { Request, Response } from "express";
 import { PaymentService } from "./payment.service";
 import { StatusCodes } from "http-status-codes";
 import { PaymentStatus } from "./payment.interface";
-import { sendResponse } from "../../utils/sendResponse";
+import sendResponse from "../../utils/sendResponse";
 
 export const PaymentController = {
-  createPayment: async (req: Request, res: Response) => {
+  createPayment: async (req: any, res: any) => {
     const payment = await PaymentService.createPayment(req.body);
     sendResponse(res, {
       statusCode: StatusCodes.CREATED,
@@ -15,7 +14,7 @@ export const PaymentController = {
     });
   },
 
-  getPayment: async (req: Request, res: Response) => {
+  getPayment: async (req: any, res: any) => {
     const payment = await PaymentService.getPaymentById(req.params.paymentId);
     sendResponse(res, {
       statusCode: StatusCodes.OK,
@@ -25,7 +24,7 @@ export const PaymentController = {
     });
   },
 
-  updatePaymentStatus: async (req: Request, res: Response) => {
+  updatePaymentStatus: async (req: any, res: any) => {
     const { status, completedAt } = req.body;
 
     if (!Object.values(PaymentStatus).includes(status)) {

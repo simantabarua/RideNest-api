@@ -1,10 +1,9 @@
-import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
+import sendResponse from "../../utils/sendResponse";
 import { AdminService } from "./admin.service";
 import { JwtPayload } from "jsonwebtoken";
 
-const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+const getAllUsers = catchAsync(async (req: any, res: any) => {
   const query = req.query;
   const users = await AdminService.getAllUsers(query as Record<string, string>);
   sendResponse(res, {
@@ -15,7 +14,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getAllDrivers = catchAsync(async (req: Request, res: Response) => {
+const getAllDrivers = catchAsync(async (req: any, res: any) => {
   const drivers = await AdminService.getAllDrivers();
   sendResponse(res, {
     statusCode: 200,
@@ -25,7 +24,7 @@ const getAllDrivers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getAllRides = catchAsync(async (req: Request, res: Response) => {
+const getAllRides = catchAsync(async (req: any, res: any) => {
   const query = req.query;
   const rides = await AdminService.getAllRides(query as Record<string, string>);
   sendResponse(res, {
@@ -36,7 +35,7 @@ const getAllRides = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateUserRole = catchAsync(async (req: Request, res: Response) => {
+const updateUserRole = catchAsync(async (req: any, res: any) => {
   const payload = req.body;
   const updatedUser = await AdminService.updateUserInfo(
     req.params.userId,
@@ -52,7 +51,7 @@ const updateUserRole = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const deleteUser = catchAsync(async (req: Request, res: Response) => {
+const deleteUser = catchAsync(async (req: any, res: any) => {
   const { userId } = req.params;
   await AdminService.deleteUser(userId);
   sendResponse(res, {
@@ -62,7 +61,7 @@ const deleteUser = catchAsync(async (req: Request, res: Response) => {
     data: null,
   });
 });
-const getAllUsersStats = catchAsync(async (req: Request, res: Response) => {
+const getAllUsersStats = catchAsync(async (req: any, res: any) => {
   const stats = await AdminService.getAllUsersStats();
   sendResponse(res, {
     statusCode: 200,
@@ -72,7 +71,7 @@ const getAllUsersStats = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const getAdminDashboardStats = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: any, res: any) => {
     const stats = await AdminService.getAdminDashboardStats();
     sendResponse(res, {
       statusCode: 200,
@@ -83,7 +82,7 @@ const getAdminDashboardStats = catchAsync(
   }
 );
 
-const getAdminDriverStats = catchAsync(async (req: Request, res: Response) => {
+const getAdminDriverStats = catchAsync(async (req: any, res: any) => {
   const stats = await AdminService.getAdminDriverStats();
   sendResponse(res, {
     statusCode: 200,
@@ -92,7 +91,7 @@ const getAdminDriverStats = catchAsync(async (req: Request, res: Response) => {
     data: stats,
   });
 });
-const getAdminRiderStats = catchAsync(async (req: Request, res: Response) => {
+const getAdminRiderStats = catchAsync(async (req: any, res: any) => {
   const rideId = req.params.id;
   const stats = await AdminService.getAdminRiderStats(rideId);
   sendResponse(res, {
@@ -103,7 +102,7 @@ const getAdminRiderStats = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getAdminRidesStats = catchAsync(async (req: Request, res: Response) => {
+const getAdminRidesStats = catchAsync(async (req: any, res: any) => {
   const stats = await AdminService.getAdminRidesStats();
   sendResponse(res, {
     statusCode: 200,

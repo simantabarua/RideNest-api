@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { Router } from "express";
 import { AuthController } from "./auth.controller";
 import { Role } from "../user/user.interface";
 import passport from "passport";
@@ -13,7 +13,7 @@ router.patch(
   checkAuth(...Object.values(Role)),
   AuthController.changePassword
 );
-router.get("/google", (req: Request, res: Response, next: NextFunction) => {
+router.get("/google", (req: any, res: any, next: any) => {
   const redirect = (req.query.redirect as string) ?? "/";
   passport.authenticate("google", {
     scope: ["email", "profile"],
