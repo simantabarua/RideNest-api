@@ -129,7 +129,14 @@ const googleAuthController = catchAsync(
     }
     const tokenInfo = createUserToken(user);
     setAuthCookies(res, tokenInfo.accessToken, tokenInfo.refreshToken);
-    const target = redirectTo ? redirectTo : "dashboard";
+    let target = redirectTo;
+    if (!target) {
+      if (user.role === Role.ADMIN || user.role === Role.SUPER_ADMIN) {
+        target = "admin/dashboard";
+      } else {
+        target = "dashboard";
+      }
+    }
     res.redirect(`${envVars.FRONTEND_URL}/${target}`);
   }
 );
