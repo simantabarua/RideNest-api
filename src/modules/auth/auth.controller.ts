@@ -8,6 +8,7 @@ import { envVars } from "../../config/env";
 import { AuthServices } from "./auth.service";
 import { JwtPayload } from "jsonwebtoken";
 import { clearAuthCookies, setAuthCookies } from "../../utils/manageCookie";
+import { Role } from "../user/user.interface";
 
 const credentialLogin = catchAsync(
   async (req: any, res: any, next: any) => {
