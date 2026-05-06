@@ -12,10 +12,24 @@ import { connectRedis } from "./config/redis.config";
 
 const app = express();
 
-const allowedOrigins =
-  process.env.NODE_ENV === "production"
-    ? ["https://ridenest-dev.web.app"]
-    : ["http://localhost:3000"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://ridenest-dev.web.app",
+  "https://ridenest-two.vercel.app",
+];
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      // allow non-browser tools (Postman, curl) and same-origin requests
+      if (!origin) return cb(null, true);
+      if (allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error(`CORS: origin ${origin} not allowed`));
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -24,7 +38,7 @@ app.use(
   expressSession({
     secret: envVars.EXPRESS_SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
       httpOnly: true,
       secure: true,
@@ -36,12 +50,6 @@ connectRedis();
 app.use(passport.initialize());
 app.use(passport.session());
 configurePassport();
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-  })
-);
 app.get("/", (req: Request, res: Response) => {
   res.status(200).send("server is running online");
 });
