@@ -19,14 +19,35 @@ const allowedOrigins = [
   "https://ridenest-two.vercel.app",
 ];
 
+// Manual CORS middleware (more reliable on Vercel than the cors package).
+// Handles the preflight OPTIONS request and sets headers on every response.
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      req.headers["access-control-request-headers"] ||
+        "Content-Type, Authorization"
+    );
+  }
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
+  next();
+});
+
+// Keep the cors package as a fallback (for any edge case)
 app.use(
   cors({
-    origin: (origin, cb) => {
-      // allow non-browser tools (Postman, curl, server-to-server)
-      if (!origin) return cb(null, true);
-      if (allowedOrigins.includes(origin)) return cb(null, origin);
-      return cb(new Error(`CORS: origin ${origin} not allowed`));
-    },
+    origin: allowedOrigins,
     credentials: true,
   })
 );
