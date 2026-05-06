@@ -67,7 +67,7 @@ app.use(
     },
   })
 );
-connectRedis();
+
 app.use(passport.initialize());
 app.use(passport.session());
 configurePassport();

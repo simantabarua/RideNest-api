@@ -3,6 +3,7 @@ import { Server } from "http";
 import { envVars } from "./config/env";
 import app from "./app";
 import { dbConnect } from "./config/database";
+import { connectRedis } from "./config/redis.config";
 import { seedAdmin, seedDriver, seedRider, seedSuperAdmin } from "./utils/seedSuperAdmin";
 
 let server: Server;
@@ -10,6 +11,7 @@ let server: Server;
 const startServer = async () => {
   try {
     await dbConnect();
+    await connectRedis();
     server = app.listen(envVars.PORT, () => {
       console.log(`🚀 Server is running on port ${envVars.PORT}`);
     });

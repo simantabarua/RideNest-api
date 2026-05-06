@@ -75,7 +75,8 @@ const loadEnvVariables = (): EnvConfig => {
 
   for (const key of requiredEnvVars) {
     if (!process.env[key]) {
-      throw new Error(`❌ Missing required environment variable: ${key}`);
+      // eslint-disable-next-line no-console
+      console.error(`❌ Warning: Missing required environment variable: ${key}`);
     }
   }
 
