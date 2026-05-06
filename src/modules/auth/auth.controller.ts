@@ -93,18 +93,33 @@ const logout = catchAsync(
     // 1. Clear cookies
     clearAuthCookies(res);
 
-    // 2. Clear passport session if it exists
+    // 2. Clear passport session and handle final response
     if (req.logout) {
-      req.logout((err: any) => {
+      return req.logout((err: any) => {
         if (err) return next(err);
+        
+        // 3. Destroy express session if it exists
+        if (req.session) {
+          req.session.destroy(() => {
+            sendResponse(res, {
+              statusCode: StatusCodes.OK,
+              success: true,
+              message: "User logged out successfully",
+              data: null,
+            });
+          });
+        } else {
+          sendResponse(res, {
+            statusCode: StatusCodes.OK,
+            success: true,
+            message: "User logged out successfully",
+            data: null,
+          });
+        }
       });
     }
 
-    // 3. Clear express session if it exists
-    if (req.session) {
-      req.session.destroy();
-    }
-
+    // Fallback if req.logout is not present
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
