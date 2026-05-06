@@ -36,6 +36,7 @@ const ensureDriverHasNoActiveRide = async (driverId: string) => {
 };
 
 const createRide = async (data: IRideRequest, riderId: string) => {
+  await ensureUserIsActive(riderId);
   const activeRide = await Ride.findOne({
     rider: riderId,
     status: {
@@ -117,8 +118,6 @@ const cancelRide = async (
   userId: string,
   options: { reason: string; cancelBy: Role }
 ) => {
-  await ensureUserIsActive(userId);
-
   const ride = await Ride.findById(rideId);
   if (!ride) throw new AppError("Ride not found", StatusCodes.NOT_FOUND);
 

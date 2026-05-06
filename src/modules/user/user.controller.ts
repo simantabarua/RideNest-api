@@ -34,12 +34,12 @@ const updateUser = catchAsync(
 
 const getProfile = catchAsync(async (req: any, res: any) => {
   const { id: userId } = req.user as JwtPayload;
-  const driver = await UserService.getProfile(userId);
-  if (!driver) {
+  const user = await UserService.getProfile(userId);
+  if (!user) {
     return sendResponse(res, {
       statusCode: 404,
       success: false,
-      message: "Driver not found",
+      message: "User not found",
       data: null,
     });
   }
@@ -47,8 +47,8 @@ const getProfile = catchAsync(async (req: any, res: any) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Driver profile fetched",
-    data: driver,
+    message: "Profile fetched successfully",
+    data: user,
   });
 });
 export const UserController = {
