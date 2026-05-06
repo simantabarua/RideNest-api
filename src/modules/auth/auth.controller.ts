@@ -148,8 +148,10 @@ const googleAuthController = catchAsync(
     if (!target) {
       if (user.role === Role.ADMIN || user.role === Role.SUPER_ADMIN) {
         target = "admin/dashboard";
+      } else if (user.role === Role.DRIVER) {
+        target = "driver/dashboard";
       } else {
-        target = "dashboard";
+        target = "rider/dashboard";
       }
     }
     res.redirect(`${envVars.FRONTEND_URL}/${target}`);
