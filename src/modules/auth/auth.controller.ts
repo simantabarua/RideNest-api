@@ -129,7 +129,8 @@ const googleAuthController = catchAsync(
     }
     const tokenInfo = createUserToken(user);
     setAuthCookies(res, tokenInfo.accessToken, tokenInfo.refreshToken);
-    res.redirect(`${envVars.FRONTEND_URL}/${redirectTo}`);
+    const target = redirectTo ? redirectTo : "dashboard";
+    res.redirect(`${envVars.FRONTEND_URL}/${target}`);
   }
 );
 export const AuthController = {
