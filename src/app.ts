@@ -22,9 +22,9 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, cb) => {
-      // allow non-browser tools (Postman, curl) and same-origin requests
+      // allow non-browser tools (Postman, curl, server-to-server)
       if (!origin) return cb(null, true);
-      if (allowedOrigins.includes(origin)) return cb(null, true);
+      if (allowedOrigins.includes(origin)) return cb(null, origin);
       return cb(new Error(`CORS: origin ${origin} not allowed`));
     },
     credentials: true,
