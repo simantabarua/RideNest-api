@@ -1,9 +1,19 @@
-# Node
+# Dependency directories
 node_modules/
+
+# Build output
 dist/
+build/
+coverage/
 public/
+*.tsbuildinfo
+
+# Environment files
 .env
-.env.*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Logs
 logs/
@@ -24,24 +34,20 @@ Thumbs.db
 *.ntvs*
 *.njsproj
 *.sln
-
-# TypeScript
-*.tsbuildinfo
-
-# Build output
-build/
-coverage/
-
-# Optional: for macOS/Linux users with permission errors
 *.swp
+*.patch
+*.diff
 
-# pnpm store (not needed to push)
+
+
+# pnpm store
 .pnpm-store/
 
-
-
-
-
-# Test coverage
-coverage/
+# Deployment
 .vercel
+.serverless
+.fusebox/
+.dynamodb/
+
+# Optional: TypeScript
+*.tsbuildinfo
