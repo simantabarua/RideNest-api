@@ -19,4 +19,7 @@ router.patch(
   DriverController.setAvailability
 );
 
+router.get("/", DriverController.getPublicDrivers);
+router.get("/:id", DriverController.getDriverById);
+
 export const DriverRoute = router;
