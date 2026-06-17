@@ -6,6 +6,7 @@ import { DriverRoute } from "../modules/driver/driver.route";
 import { AdminRoute } from "../modules/admin/admin.route";
 import { PaymentRoute } from "../modules/payment/payment.route";
 import { OtpRoute } from "../modules/otp/otp.route";
+import { NotificationRoutes } from "../modules/notification/notification.route";
 
 export const router = Router();
 
@@ -17,6 +18,7 @@ const moduleRoutes = [
   { path: "/admin", route: AdminRoute },
   { path: "/payment", route: PaymentRoute },
   { path: "/otp", route: OtpRoute },
+  { path: "/notifications", route: NotificationRoutes },
 ];
 
 moduleRoutes.forEach((route) => {

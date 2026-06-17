@@ -1,6 +1,7 @@
 import mongoose, { Types } from "mongoose";
 import { IRideRequest, IRide, RideStatus } from "./ride.interface";
 import { Ride } from "./ride.model";
+import { NotificationService } from "../notification/notification.service";
 import User from "../user/user.model";
 import { DriverInfo } from "../driver/driver.model";
 import { StatusCodes } from "http-status-codes";
@@ -51,12 +52,21 @@ const createRide = async (data: IRideRequest, riderId: string) => {
     );
   }
 
-  return Ride.create({
+  const newRide = await Ride.create({
     ...data,
     rider: riderId,
     status: RideStatus.REQUESTED,
     timestamps: { requestedAt: new Date() },
   });
+
+  await NotificationService.createNotification({
+    user: new Types.ObjectId(riderId),
+    title: "Ride Requested",
+    message: `Your ride request to ${data.destinationLocation} has been submitted.`,
+    type: "info",
+  });
+
+  return newRide;
 };
 
 const getRidesByUser = async (userId: string) => {
@@ -164,6 +174,39 @@ const cancelRide = async (
     { upsert: true, new: true }
   );
 
+  // Trigger notification
+  if (options.cancelBy === Role.RIDER) {
+    if (ride.driver) {
+      await NotificationService.createNotification({
+        user: ride.driver,
+        title: "Ride Cancelled",
+        message: "The rider has cancelled the ride.",
+        type: "warning",
+      });
+    }
+    await NotificationService.createNotification({
+      user: ride.rider,
+      title: "Ride Cancelled",
+      message: "You have cancelled the ride successfully.",
+      type: "info",
+    });
+  } else if (options.cancelBy === Role.DRIVER) {
+    await NotificationService.createNotification({
+      user: ride.rider,
+      title: "Ride Cancelled",
+      message: "The driver has cancelled the ride. Please request another ride.",
+      type: "warning",
+    });
+    if (ride.driver) {
+      await NotificationService.createNotification({
+        user: ride.driver,
+        title: "Ride Cancelled",
+        message: "You have cancelled the ride.",
+        type: "info",
+      });
+    }
+  }
+
   return getRideById(ride._id.toString());
 };
 
@@ -202,6 +245,20 @@ const acceptRide = async (rideId: string, driverId: string) => {
     { driver: driverId },
     { $set: { isAvailable: false } }
   );
+
+  // Trigger notification
+  await NotificationService.createNotification({
+    user: ride.rider,
+    title: "Ride Accepted",
+    message: "A driver has accepted your ride request and is heading to your pickup location.",
+    type: "success",
+  });
+  await NotificationService.createNotification({
+    user: new Types.ObjectId(driverId),
+    title: "Ride Accepted",
+    message: "You have accepted the ride request.",
+    type: "info",
+  });
 
   return getRideById(ride._id.toString());
 };
@@ -276,6 +333,20 @@ const completeRide = async (rideId: string, driverId: string) => {
     }
   );
 
+  // Trigger notification
+  await NotificationService.createNotification({
+    user: updatedRide.rider,
+    title: "Trip Completed",
+    message: `You have arrived at ${updatedRide.destinationLocation}. Thank you for riding with RideNest!`,
+    type: "success",
+  });
+  await NotificationService.createNotification({
+    user: updatedRide.driver as Types.ObjectId,
+    title: "Trip Completed",
+    message: `You completed the ride successfully. Earnings of BDT ${totalFare} have been added to your balance.`,
+    type: "success",
+  });
+
   return Ride.findById(updatedRide._id)
     .populate("rider", "name email")
     .populate("driver", "name email")
@@ -334,6 +405,23 @@ const progressRideStatus = async (
   }
 
   await ride.save();
+
+  if (newStatus === RideStatus.PICKED_UP) {
+    await NotificationService.createNotification({
+      user: ride.rider,
+      title: "Driver Arrived",
+      message: "Your driver has arrived at the pickup location.",
+      type: "success",
+    });
+  } else if (newStatus === RideStatus.IN_TRANSIT) {
+    await NotificationService.createNotification({
+      user: ride.rider,
+      title: "Trip Started",
+      message: "Your trip has started. Have a safe journey!",
+      type: "info",
+    });
+  }
+
   return getRideById(ride._id.toString());
 };
 
